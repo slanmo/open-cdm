@@ -10,7 +10,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.io.DefaultResourceLoader;
 
 import com.clougence.clouddm.api.common.boot.UnifiedPostConstructUtils;
-import com.clougence.clouddm.api.common.exception.PrintErrorUncaughtExcHandler;
 import com.clougence.clouddm.worker.component.rsocket.RSocketClientServiceImpl;
 
 import lombok.extern.slf4j.Slf4j;

@@ -1,4 +1,4 @@
-package com.clougence.clouddm.api.common.exception;
+package com.clougence.clouddm.boot;
 
 import com.clougence.utils.ExceptionUtils;
 
