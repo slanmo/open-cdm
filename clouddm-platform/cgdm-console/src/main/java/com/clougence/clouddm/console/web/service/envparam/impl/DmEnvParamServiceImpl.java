@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import com.clougence.clouddm.sdk.approval.ApprovalProviderSpi;
 import org.springframework.stereotype.Service;

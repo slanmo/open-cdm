@@ -2,7 +2,7 @@ package com.clougence.clouddm.console.web.global.rsocket;
 
 import java.util.List;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -72,6 +72,7 @@ public class ConsoleRSocketConfig {
     }
 
     @Bean
+    @SuppressWarnings("removal")
     public RSocketStrategies consoleRSocketStrategies() {
         return RSocketStrategies.builder()
             .encoders(encoders -> encoders.add(new Jackson2JsonEncoder()))

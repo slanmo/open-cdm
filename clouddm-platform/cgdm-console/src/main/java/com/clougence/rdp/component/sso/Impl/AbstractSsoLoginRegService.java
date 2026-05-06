@@ -2,7 +2,7 @@
 //
 //import java.util.*;
 //
-//import javax.annotation.Resource;
+//import jakarta.annotation.Resource;
 //
 //import org.springframework.transaction.annotation.Propagation;
 //import org.springframework.transaction.annotation.Transactional;

@@ -2,7 +2,7 @@ package com.clougence.clouddm.console.web.service.faker.asyntask;
 
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;

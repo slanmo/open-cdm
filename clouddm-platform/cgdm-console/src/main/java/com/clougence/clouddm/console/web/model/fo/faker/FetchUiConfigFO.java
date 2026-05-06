@@ -1,6 +1,6 @@
 package com.clougence.clouddm.console.web.model.fo.faker;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import lombok.Getter;
 import lombok.Setter;

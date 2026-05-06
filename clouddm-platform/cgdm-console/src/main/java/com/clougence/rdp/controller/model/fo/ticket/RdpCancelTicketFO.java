@@ -1,6 +1,6 @@
 package com.clougence.rdp.controller.model.fo.ticket;
 
-import javax.validation.constraints.Min;
+import jakarta.validation.constraints.Min;
 
 import lombok.Getter;
 import lombok.Setter;

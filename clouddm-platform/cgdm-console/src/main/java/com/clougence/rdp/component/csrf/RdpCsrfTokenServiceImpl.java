@@ -2,7 +2,7 @@ package com.clougence.rdp.component.csrf;
 
 import java.util.Date;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 

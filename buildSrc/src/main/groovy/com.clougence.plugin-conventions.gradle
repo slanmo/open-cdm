@@ -21,6 +21,9 @@ try (FileInputStream fis = new FileInputStream(new File(rootDir, "gradle.propert
     globalConfig.load(fis)
 }
 
+def configuredJavaVersion = JavaVersion.toVersion(globalConfig.getProperty("cg.lib.java.version"))
+def configuredJavaLanguageVersion = JavaLanguageVersion.of(Integer.parseInt(globalConfig.getProperty("cg.lib.java.version")))
+
 ext {
     ANTLR_VERSION = globalConfig.getProperty("cg.lib.antlr.version")
     JACKSON_VERSION = globalConfig.getProperty("cg.lib.jackson.version")
@@ -62,8 +65,14 @@ dependencies {
 group = 'com.cdmgr'
 version = 'lib'
 //java.sourceCompatibility = JavaVersion.VERSION_19
-java.sourceCompatibility = JavaVersion.VERSION_1_8
-java.targetCompatibility = JavaVersion.VERSION_1_8
+java.sourceCompatibility = configuredJavaVersion
+java.targetCompatibility = configuredJavaVersion
+
+java {
+    toolchain {
+        languageVersion = configuredJavaLanguageVersion
+    }
+}
 
 task customFatJar(type: Jar, dependsOn: jar) {
     Properties properties = new Properties()

@@ -2,7 +2,7 @@ package com.clougence.clouddm.console.web.model.fo.datasource;
 
 import java.util.Map;
 
-import javax.validation.constraints.Min;
+import jakarta.validation.constraints.Min;
 
 import lombok.Getter;
 import lombok.Setter;

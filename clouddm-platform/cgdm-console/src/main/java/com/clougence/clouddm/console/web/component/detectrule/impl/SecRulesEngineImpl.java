@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import com.clougence.clouddm.sdk.service.secrules.*;
 import org.springframework.stereotype.Service;

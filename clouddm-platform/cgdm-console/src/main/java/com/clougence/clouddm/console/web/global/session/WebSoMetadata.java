@@ -3,7 +3,7 @@ package com.clougence.clouddm.console.web.global.session;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import javax.websocket.server.ServerEndpoint;
+import jakarta.websocket.server.ServerEndpoint;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;

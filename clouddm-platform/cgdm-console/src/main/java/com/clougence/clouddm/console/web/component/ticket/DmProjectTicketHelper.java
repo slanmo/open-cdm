@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import com.clougence.clouddm.sdk.approval.ApprovalProviderSpi;
 import org.springframework.stereotype.Service;

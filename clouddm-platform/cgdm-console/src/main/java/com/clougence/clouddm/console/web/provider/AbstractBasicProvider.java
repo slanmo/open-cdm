@@ -1,6 +1,6 @@
 package com.clougence.clouddm.console.web.provider;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import com.clougence.clouddm.comm.model.auth.WorkerIdentity;
 import com.clougence.clouddm.console.web.component.auth.BizResOwnerCacheService;

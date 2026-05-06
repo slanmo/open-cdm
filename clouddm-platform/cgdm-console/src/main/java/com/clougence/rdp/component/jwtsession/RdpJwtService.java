@@ -1,7 +1,7 @@
 package com.clougence.rdp.component.jwtsession;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.clougence.rdp.controller.model.enumeration.MfaPreActionType;

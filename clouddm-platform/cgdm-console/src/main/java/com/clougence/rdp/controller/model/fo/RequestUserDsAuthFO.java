@@ -2,7 +2,7 @@ package com.clougence.rdp.controller.model.fo;
 
 import java.util.List;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 import lombok.Getter;
 import lombok.Setter;

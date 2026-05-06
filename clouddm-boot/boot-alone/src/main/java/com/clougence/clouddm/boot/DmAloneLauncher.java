@@ -1,6 +1,9 @@
 package com.clougence.clouddm.boot;
 
 import java.util.Date;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.codehaus.plexus.classworlds.ClassWorld;
 import org.springframework.boot.SpringApplication;
@@ -26,8 +29,8 @@ public class DmAloneLauncher {
     public static void main(String[] args) throws Exception {
         System.setProperty("app.buildId", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
         System.setProperty("app.buildVersion", "xxx.xxx.xxx(" + DateFormatType.s_yyyyMMdd.format(new Date()) + ")");
-        System.setProperty("app.logPath", "logs/alone");
-        System.setProperty("app.data", "data/alone");
+        System.setProperty("app.logPath", prepareRuntimePath("logs", "alone"));
+        System.setProperty("app.data", prepareRuntimePath("data", "alone"));
 
         main(args, null);
     }
@@ -95,5 +98,11 @@ public class DmAloneLauncher {
         Package beanPackage = pcClass.getPackage();
         String packageName = beanPackage == null ? "" : beanPackage.getName();
         return WORKER_PACKAGE_NAME.equals(packageName) || packageName.startsWith(WORKER_PACKAGE_NAME + ".");
+    }
+
+    private static String prepareRuntimePath(String first, String... more) throws Exception {
+        Path path = Paths.get(first, more).toAbsolutePath().normalize();
+        Files.createDirectories(path);
+        return path.toString();
     }
 }

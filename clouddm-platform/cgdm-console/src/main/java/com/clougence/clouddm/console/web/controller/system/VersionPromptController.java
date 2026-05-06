@@ -2,7 +2,7 @@ package com.clougence.clouddm.console.web.controller.system;
 
 import static com.clougence.rdp.constant.auth.RequestAuth.AuthStrategy.Ignore;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

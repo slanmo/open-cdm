@@ -1,6 +1,6 @@
 package com.clougence.clouddm.comm.component.impl.client;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.springframework.messaging.rsocket.RSocketRequester;
 import com.clougence.clouddm.comm.WorkerRSocketClient;

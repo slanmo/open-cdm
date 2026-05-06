@@ -11,11 +11,9 @@
         <sift>
             <appender name="FILE-${module}" class="ch.qos.logback.core.rolling.RollingFileAppender">
                 <File>${app.logPath:-.}/${module}.log</File>
-                <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
                     <fileNamePattern>${app.logPath:-.}/%d{yyyy-MM-dd}/${module}-%d{yyyy-MM-dd}-%i.log.gz</fileNamePattern>
-                    <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                        <maxFileSize>512MB</maxFileSize>
-                    </timeBasedFileNamingAndTriggeringPolicy>
+                    <maxFileSize>512MB</maxFileSize>
                     <maxHistory>60</maxHistory>
                 </rollingPolicy>
                 <encoder>
@@ -56,14 +54,12 @@
         <sift>
             <appender name="FILE-sqlAudit" class="ch.qos.logback.core.rolling.RollingFileAppender">
                 <File>${app.logPath:-.}/sql_audit.log</File>
-                <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
                     <!-- rollover daily -->
                     <fileNamePattern>${app.logPath:-.}/%d{yyyy-MM-dd}/sqlAudit-%d{yyyy-MM-dd}-%i.log.gz
                     </fileNamePattern>
-                    <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                        <!-- or whenever the file size reaches 100MB -->
-                        <maxFileSize>512MB</maxFileSize>
-                    </timeBasedFileNamingAndTriggeringPolicy>
+                    <!-- or whenever the file size reaches 100MB -->
+                    <maxFileSize>512MB</maxFileSize>
                     <maxHistory>60</maxHistory>
                 </rollingPolicy>
                 <encoder>
@@ -81,14 +77,12 @@
         <sift>
             <appender name="FILE-${uid}" class="ch.qos.logback.core.rolling.RollingFileAppender">
                 <File>${app.logPath:-.}/thirdParty.log</File>
-                <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
                     <!-- rollover daily -->
                     <fileNamePattern>${app.logPath:-.}/%d{yyyy-MM-dd}/thirdParty-%d{yyyy-MM-dd}-%i.log.gz
                     </fileNamePattern>
-                    <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                        <!-- or whenever the file size reaches 100MB -->
-                        <maxFileSize>512MB</maxFileSize>
-                    </timeBasedFileNamingAndTriggeringPolicy>
+                    <!-- or whenever the file size reaches 100MB -->
+                    <maxFileSize>512MB</maxFileSize>
                     <!--                    <cleanHistoryOnStart>true</cleanHistoryOnStart>-->
                     <maxHistory>60</maxHistory>
                 </rollingPolicy>

@@ -3,7 +3,7 @@ package com.clougence.clouddm.console.web.service.editor.impl;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import com.clougence.clouddm.sdk.execute.resultset.echo.*;
 import org.springframework.stereotype.Service;

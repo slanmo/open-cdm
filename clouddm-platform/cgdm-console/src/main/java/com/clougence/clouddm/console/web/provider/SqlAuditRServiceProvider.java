@@ -3,7 +3,7 @@ package com.clougence.clouddm.console.web.provider;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 

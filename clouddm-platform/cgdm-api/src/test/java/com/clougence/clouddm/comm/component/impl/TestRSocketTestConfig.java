@@ -1,5 +1,5 @@
 //package com.clougence.clouddm.comm.component.impl;
-//import javax.annotation.Resource;
+//import jakarta.annotation.Resource;
 //
 //import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 //import org.springframework.context.ApplicationContext;

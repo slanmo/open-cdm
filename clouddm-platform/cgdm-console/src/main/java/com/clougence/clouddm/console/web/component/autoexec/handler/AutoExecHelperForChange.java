@@ -2,7 +2,7 @@ package com.clougence.clouddm.console.web.component.autoexec.handler;
 
 import java.util.Locale;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 

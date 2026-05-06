@@ -1,6 +1,6 @@
 package com.clougence.clouddm.console.web.global.init;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;

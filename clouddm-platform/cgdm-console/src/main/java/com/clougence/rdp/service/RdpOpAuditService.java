@@ -3,7 +3,7 @@ package com.clougence.rdp.service;
 import java.util.Date;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import com.clougence.clouddm.base.metadata.rdp.enumeration.ResourceType;
 import com.clougence.rdp.constant.auth.SecurityLevel;

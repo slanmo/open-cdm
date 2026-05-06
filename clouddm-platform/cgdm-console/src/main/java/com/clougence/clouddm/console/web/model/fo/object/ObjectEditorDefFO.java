@@ -2,7 +2,7 @@ package com.clougence.clouddm.console.web.model.fo.object;
 
 import java.util.List;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import com.clougence.clouddm.console.web.model.fo.editor.table.EditorViewModeEnum;
 

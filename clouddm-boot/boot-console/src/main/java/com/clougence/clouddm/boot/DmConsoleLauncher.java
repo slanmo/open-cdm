@@ -1,6 +1,9 @@
 package com.clougence.clouddm.boot;
 
 import java.util.Date;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.codehaus.plexus.classworlds.ClassWorld;
 import org.springframework.boot.SpringApplication;
@@ -25,8 +28,8 @@ public class DmConsoleLauncher {
     public static void main(String[] args) throws Exception {
         System.setProperty("app.buildId", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
         System.setProperty("app.buildVersion", "xxx.xxx.xxx(" + DateFormatType.s_yyyyMMdd.format(new Date()) + ")");
-        System.setProperty("app.logPath", "logs/console");
-        System.setProperty("app.data", "data/console");
+        System.setProperty("app.logPath", prepareRuntimePath("logs", "console"));
+        System.setProperty("app.data", prepareRuntimePath("data", "console"));
 
         main(args, null);
     }
@@ -67,5 +70,11 @@ public class DmConsoleLauncher {
         log.info("[DmConsoleLauncher] Console All Context Inited.");
         ShutdownHook.joinShutdown();
         UnifiedPostConstructUtils.doDestroyConstruct(context);
+    }
+
+    private static String prepareRuntimePath(String first, String... more) throws Exception {
+        Path path = Paths.get(first, more).toAbsolutePath().normalize();
+        Files.createDirectories(path);
+        return path.toString();
     }
 }

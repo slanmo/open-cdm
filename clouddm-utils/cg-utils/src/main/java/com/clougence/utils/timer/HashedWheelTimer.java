@@ -256,6 +256,7 @@ public class HashedWheelTimer implements Timer {
     }
 
     @Override
+    @SuppressWarnings("removal")
     protected void finalize() throws Throwable {
         try {
             super.finalize();

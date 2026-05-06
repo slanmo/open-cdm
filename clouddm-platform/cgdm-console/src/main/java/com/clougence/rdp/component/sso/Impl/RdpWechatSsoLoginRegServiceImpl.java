@@ -3,7 +3,7 @@
 //import java.net.URLEncoder;
 //import java.util.HashMap;
 //
-//import javax.annotation.Resource;
+//import jakarta.annotation.Resource;
 //
 //import org.springframework.beans.factory.annotation.Value;
 //import org.springframework.stereotype.Service;

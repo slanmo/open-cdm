@@ -1,6 +1,6 @@
 package com.clougence.clouddm.console.web.controller.system;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.slf4j.MDC;
 import org.springframework.web.bind.annotation.RequestBody;

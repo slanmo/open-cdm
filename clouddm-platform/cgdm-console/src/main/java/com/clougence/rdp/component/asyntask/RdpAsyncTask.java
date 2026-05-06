@@ -2,7 +2,7 @@ package com.clougence.rdp.component.asyntask;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import com.clougence.rdp.dal.enumeration.RdpAsyncTaskProcessType;
 import com.clougence.rdp.dal.mapper.RdpAsyncTaskMapper;

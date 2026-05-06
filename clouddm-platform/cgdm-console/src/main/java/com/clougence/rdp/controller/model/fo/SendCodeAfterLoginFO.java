@@ -1,6 +1,6 @@
 package com.clougence.rdp.controller.model.fo;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import com.clougence.rdp.controller.model.enumeration.VerifyCodeType;
 import com.clougence.rdp.controller.model.enumeration.VerifyType;

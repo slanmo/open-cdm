@@ -1,6 +1,6 @@
 package com.clougence.clouddm.console.web.controller.editor.query;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 

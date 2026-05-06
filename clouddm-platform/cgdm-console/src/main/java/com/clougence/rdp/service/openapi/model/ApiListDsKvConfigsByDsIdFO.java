@@ -1,6 +1,6 @@
 package com.clougence.rdp.service.openapi.model;
 
-import javax.validation.constraints.Min;
+import jakarta.validation.constraints.Min;
 
 import lombok.Getter;
 import lombok.Setter;

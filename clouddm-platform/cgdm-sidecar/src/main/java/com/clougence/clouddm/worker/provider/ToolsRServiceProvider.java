@@ -1,6 +1,6 @@
 package com.clougence.clouddm.worker.provider;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 

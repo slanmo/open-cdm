@@ -1,14 +1,11 @@
 package com.clougence.clouddm.init;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
+import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
+import org.springframework.boot.jdbc.autoconfigure.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -20,8 +17,7 @@ import com.clougence.rdp.util.RdpI18nUtils;
 /**
  * 初始化模式 Spring Boot 应用。
  */
-@SpringBootApplication(exclude = { DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, FlywayAutoConfiguration.class,
-                                   SecurityAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class })
+@SpringBootApplication(exclude = { DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class })
 @ComponentScan(basePackages = { "com.clougence.clouddm.init.controller", "com.clougence.clouddm.init.service", "com.clougence.clouddm.init.model",
                                 "com.clougence.clouddm.console.web.constants", "com.clougence.clouddm.console.web.service.system",
                                 "com.clougence.clouddm.console.web.global.exception", "com.clougence.clouddm.api.common.rpc",
@@ -39,9 +35,8 @@ public class InitApplication implements WebMvcConfigurer {
         System.setProperty("spring.config.name", "init");
         System.setProperty("spring.profiles.active", "init");
         System.setProperty("spring.web.resources.static-locations", "classpath:/templates");
-        System.setProperty("spring.autoconfigure.exclude", "org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration,"
-                                                           + "org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration,"
-                                                           + "org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration,"
+        System.setProperty("spring.autoconfigure.exclude", "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration,"
+                                                           + "org.springframework.boot.jdbc.autoconfigure.DataSourceTransactionManagerAutoConfiguration,"
                                                            + "org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration,"
                                                            + "com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration");
         SpringApplication.run(InitApplication.class, args);

@@ -2,7 +2,7 @@ package com.clougence.rdp.controller.model.fo;
 
 import java.util.Date;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 import com.clougence.rdp.constant.auth.SecurityLevel;
 

@@ -4,8 +4,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.annotation.Resource;
-import javax.websocket.server.ServerEndpoint;
+import jakarta.annotation.Resource;
+import jakarta.websocket.server.ServerEndpoint;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.CloseStatus;

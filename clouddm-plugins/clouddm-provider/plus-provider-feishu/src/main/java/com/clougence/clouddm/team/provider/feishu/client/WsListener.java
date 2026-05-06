@@ -2,8 +2,6 @@ package com.clougence.clouddm.team.provider.feishu.client;
 
 import static com.lark.oapi.ws.Constant.*;
 
-import javax.annotation.Nullable;
-
 import org.slf4j.Logger;
 
 import com.lark.oapi.core.utils.Strings;
@@ -57,7 +55,7 @@ public class WsListener extends WebSocketListener {
     }
 
     @Override
-    public void onFailure(WebSocket webSocket, Throwable t, @Nullable Response response) {
+    public void onFailure(WebSocket webSocket, Throwable t, Response response) {
         try {
             if (response == null) {
                 throw t;

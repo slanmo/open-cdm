@@ -20,9 +20,13 @@ try (FileInputStream fis = new FileInputStream(new File(rootDir, "gradle.propert
     globalConfig.load(fis)
 }
 
+def configuredJavaVersion = JavaVersion.toVersion(globalConfig.getProperty("cg.lib.java.version"))
+def configuredJavaLanguageVersion = JavaLanguageVersion.of(Integer.parseInt(globalConfig.getProperty("cg.lib.java.version")))
+
 ext {
     ANTLR_VERSION = globalConfig.getProperty("cg.lib.antlr.version")
     JACKSON_VERSION = globalConfig.getProperty("cg.lib.jackson.version")
+    MYBATISPLUS_VERSION = globalConfig.getProperty("cg.lib.mybatisplus.version")
     SPRINGBOOT_VERSION = globalConfig.getProperty("cg.lib.springboot.version")
     SPRING_VERSION = globalConfig.getProperty("cg.lib.spring.version")
     SLF4J_VERSION = globalConfig.getProperty("cg.lib.slf4j.version")
@@ -47,8 +51,8 @@ ext {
 
 group = 'com.cdmgr'
 version = globalConfig.getProperty("cg.clouddm.main.version")
-java.sourceCompatibility = JavaVersion.VERSION_1_8
-java.targetCompatibility = JavaVersion.VERSION_1_8
+java.sourceCompatibility = configuredJavaVersion
+java.targetCompatibility = configuredJavaVersion
 
 dependencies {
     compileOnly "org.slf4j:slf4j-api:${SLF4J_VERSION}"
@@ -73,8 +77,11 @@ configurations {
 
 java {
     withSourcesJar()
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = configuredJavaVersion
+    targetCompatibility = configuredJavaVersion
+    toolchain {
+        languageVersion = configuredJavaLanguageVersion
+    }
 }
 
 publishing {

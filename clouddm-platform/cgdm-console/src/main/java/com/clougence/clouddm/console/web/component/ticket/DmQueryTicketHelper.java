@@ -3,7 +3,7 @@ package com.clougence.clouddm.console.web.component.ticket;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import com.clougence.clouddm.sdk.approval.ApprovalProviderSpi;
 import org.springframework.stereotype.Service;

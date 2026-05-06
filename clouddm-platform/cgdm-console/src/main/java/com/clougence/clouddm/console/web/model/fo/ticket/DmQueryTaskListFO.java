@@ -1,6 +1,6 @@
 package com.clougence.clouddm.console.web.model.fo.ticket;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import com.clougence.clouddm.console.web.dal.enumeration.AutoExecTaskStatus;
 import com.clougence.rdp.util.RdpPageDO;

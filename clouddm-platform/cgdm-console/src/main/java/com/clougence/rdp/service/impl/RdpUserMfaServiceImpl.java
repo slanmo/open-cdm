@@ -5,7 +5,7 @@ import static com.clougence.rdp.constant.I18nRdpMsgKeys.MFA_CODE_IS_INVALID;
 import java.io.ByteArrayOutputStream;
 import java.text.MessageFormat;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;

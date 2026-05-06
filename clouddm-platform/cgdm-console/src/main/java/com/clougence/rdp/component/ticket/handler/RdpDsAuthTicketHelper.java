@@ -3,7 +3,7 @@ package com.clougence.rdp.component.ticket.handler;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import com.clougence.clouddm.sdk.approval.ApprovalProviderSpi;
 import org.springframework.stereotype.Service;

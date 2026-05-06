@@ -3,7 +3,7 @@ package com.clougence.rdp.component.sso;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import com.clougence.clouddm.sdk.security.login.LoginProviderSpi;
 import org.springframework.stereotype.Service;

@@ -4,7 +4,7 @@ import java.util.Locale;
 import java.util.UUID;
 import java.util.function.Function;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import com.clougence.clouddm.sdk.messenger.*;
 import org.springframework.stereotype.Service;

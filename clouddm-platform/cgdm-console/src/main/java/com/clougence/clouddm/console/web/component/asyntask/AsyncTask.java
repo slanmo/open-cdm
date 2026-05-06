@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import com.clougence.clouddm.console.web.dal.enumeration.DmAsyncTaskProcessType;
 import com.clougence.clouddm.console.web.dal.mapper.DmAsyncTaskMapper;

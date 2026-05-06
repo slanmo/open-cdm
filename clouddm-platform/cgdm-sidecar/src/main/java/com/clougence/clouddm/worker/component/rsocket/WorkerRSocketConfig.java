@@ -1,6 +1,6 @@
 package com.clougence.clouddm.worker.component.rsocket;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationContext;
@@ -49,6 +49,7 @@ public class WorkerRSocketConfig {
     }
 
     @Bean
+    @SuppressWarnings("removal")
     public RSocketStrategies sidecarRSocketStrategies() {
         return RSocketStrategies.builder()
             .encoders(encoders -> encoders.add(new Jackson2JsonEncoder()))

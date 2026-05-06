@@ -1,6 +1,6 @@
 package com.clougence.rdp.component.mcp.model.request;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import com.clougence.rdp.component.mcp.model.McpClientMethod;
 import com.clougence.rdp.component.mcp.model.McpProtocolBase;

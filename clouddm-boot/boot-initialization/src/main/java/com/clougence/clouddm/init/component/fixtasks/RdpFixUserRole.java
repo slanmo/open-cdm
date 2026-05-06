@@ -2,7 +2,7 @@ package com.clougence.clouddm.init.component.fixtasks;
 
 import java.util.List;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;

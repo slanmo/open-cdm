@@ -1,7 +1,7 @@
 package com.clougence.clouddm.console.web.model.fo.checkrules;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import com.clougence.clouddm.console.web.dal.enumeration.RuleScriptType;
 

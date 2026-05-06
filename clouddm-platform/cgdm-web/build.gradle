@@ -18,11 +18,17 @@ try (FileInputStream fis = new FileInputStream(new File(rootDir, "gradle.propert
 
 description = 'cgdm-web'
 
+def configuredJavaVersion = JavaVersion.toVersion(globalConfig.getProperty("cg.lib.java.version"))
+def configuredJavaLanguageVersion = JavaLanguageVersion.of(Integer.parseInt(globalConfig.getProperty("cg.lib.java.version")))
+
 // This module contains only static web resources — no Java source.
 // Declare the lowest compatibility so any Java consumer can resolve it.
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = configuredJavaVersion
+    targetCompatibility = configuredJavaVersion
+    toolchain {
+        languageVersion = configuredJavaLanguageVersion
+    }
 }
 
 tasks.register('npmInstall', Exec) {

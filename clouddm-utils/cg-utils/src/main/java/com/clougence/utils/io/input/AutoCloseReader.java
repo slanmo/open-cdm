@@ -73,6 +73,7 @@ public class AutoCloseReader extends ProxyReader {
      * @throws Throwable if an error occurs
      */
     @Override
+    @SuppressWarnings("removal")
     protected void finalize() throws Throwable {
         close();
         super.finalize();

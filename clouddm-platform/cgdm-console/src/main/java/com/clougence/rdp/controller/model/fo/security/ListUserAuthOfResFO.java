@@ -2,8 +2,8 @@ package com.clougence.rdp.controller.model.fo.security;
 
 import java.util.List;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import com.clougence.clouddm.sdk.security.auth.AuthKind;
 

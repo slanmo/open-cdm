@@ -1,10 +1,13 @@
 package com.clougence.clouddm.boot;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import org.codehaus.plexus.classworlds.ClassWorld;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -19,12 +22,12 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @SpringBootConfiguration
-@EnableAutoConfiguration(exclude = { SecurityAutoConfiguration.class })
+@EnableAutoConfiguration
 @ComponentScan({ "com.clougence.clouddm.boot", "com.clougence.clouddm.worker", "com.clougence.clouddm.worker.*", "com.clougence.clouddm.comm.*" })
 public class DmWorkerLauncher {
 
     public static void main(String[] args) throws Exception {
-        System.setProperty("app.logPath", "logs/sidecar");
+        System.setProperty("app.logPath", prepareRuntimePath("logs", "sidecar"));
 
         if (args == null || args.length == 0) {
             args = new String[] { "start" };
@@ -79,5 +82,11 @@ public class DmWorkerLauncher {
 
     private static void doStop(String[] args, ClassWorld world) {
         System.exit(1);
+    }
+
+    private static String prepareRuntimePath(String first, String... more) throws Exception {
+        Path path = Paths.get(first, more).toAbsolutePath().normalize();
+        Files.createDirectories(path);
+        return path.toString();
     }
 }

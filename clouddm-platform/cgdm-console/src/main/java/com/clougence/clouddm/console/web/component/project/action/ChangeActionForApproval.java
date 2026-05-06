@@ -2,7 +2,7 @@ package com.clougence.clouddm.console.web.component.project.action;
 
 import java.util.*;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 

@@ -6,7 +6,7 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import com.clougence.clouddm.api.sidecar.session.drivers.DriverRef;
 import com.clougence.clouddm.api.sidecar.session.drivers.DriverUtils;

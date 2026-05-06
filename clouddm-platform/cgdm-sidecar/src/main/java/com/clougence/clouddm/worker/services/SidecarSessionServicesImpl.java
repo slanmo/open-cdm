@@ -2,7 +2,7 @@ package com.clougence.clouddm.worker.services;
 
 import java.util.Map;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 

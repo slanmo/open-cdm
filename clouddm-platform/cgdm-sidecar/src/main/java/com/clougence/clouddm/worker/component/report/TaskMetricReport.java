@@ -2,7 +2,7 @@ package com.clougence.clouddm.worker.component.report;
 
 import java.util.Date;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.springframework.stereotype.Component;
 

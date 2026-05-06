@@ -10,7 +10,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import com.clougence.utils.CollectionUtils;
 import com.clougence.utils.HexadecimalUtils;

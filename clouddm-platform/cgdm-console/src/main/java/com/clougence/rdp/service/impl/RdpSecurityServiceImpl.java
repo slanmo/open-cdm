@@ -2,7 +2,7 @@ package com.clougence.rdp.service.impl;
 
 import java.text.MessageFormat;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 

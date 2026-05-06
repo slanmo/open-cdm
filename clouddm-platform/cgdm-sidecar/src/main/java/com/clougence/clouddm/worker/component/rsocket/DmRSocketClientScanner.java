@@ -1,7 +1,7 @@
 package com.clougence.clouddm.worker.component.rsocket;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.DependsOn;
