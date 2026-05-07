@@ -77,7 +77,7 @@ public class RdpConsoleConfig {
     @Value("${clougence.rdp.black.menu_category:#{NULL}}")
     private String         menuCategoryBlacklist;
 
-    @Value("${clougence.rdp.user.domain_suffix:clougence.com}")
+    @Value("${clougence.rdp.user.domain_suffix:cdmgr.com}")
     private String         userDomainSuffix;
 
     @Value("${clougence.rdp.product.trial:true}")

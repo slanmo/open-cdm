@@ -11,10 +11,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 
-import jakarta.annotation.Resource;
-
-import com.clougence.clouddm.sdk.security.auth.def.SecSysRole;
-import com.clougence.clouddm.sdk.security.login.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +21,11 @@ import com.clougence.clouddm.api.common.rpc.ResWebDataUtils;
 import com.clougence.clouddm.base.metadata.rdp.enumeration.GlobalDeployMode;
 import com.clougence.clouddm.base.metadata.rdp.enumeration.GlobalDeploySite;
 import com.clougence.clouddm.platform.plugin.PluginManager;
+import com.clougence.clouddm.sdk.security.auth.def.SecSysRole;
+import com.clougence.clouddm.sdk.security.login.LoginProvider;
+import com.clougence.clouddm.sdk.security.login.LoginProviderSpi;
+import com.clougence.clouddm.sdk.security.login.LoginRequest;
+import com.clougence.clouddm.sdk.security.login.LoginResponse;
 import com.clougence.clouddm.sdk.service.config.UserData;
 import com.clougence.rdp.component.csrf.RdpCsrfTokenService;
 import com.clougence.rdp.component.jwtsession.RdpJwtService;
@@ -60,6 +61,7 @@ import com.clougence.rdp.util.Sm2Utils;
 import com.clougence.utils.ExceptionUtils;
 import com.clougence.utils.StringUtils;
 
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 
 /**

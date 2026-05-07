@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import jakarta.annotation.Resource;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -23,7 +21,6 @@ import com.clougence.clouddm.init.InitTaskApplication;
 import com.clougence.clouddm.init.component.fixtasks.DmFixDmDsConfig;
 import com.clougence.clouddm.init.component.fixtasks.DmFixSecRules;
 import com.clougence.clouddm.init.component.fixtasks.InitConsolePluginLoader;
-import com.clougence.clouddm.init.component.fixtasks.RdpFixInnerUser;
 import com.clougence.clouddm.init.component.fixtasks.RdpFixUserRole;
 import com.clougence.clouddm.init.component.flyway.DmFlywayInit;
 import com.clougence.clouddm.init.constant.I18nInitFieldKeys;
@@ -34,6 +31,7 @@ import com.clougence.rdp.util.RdpI18nUtils;
 import com.clougence.utils.StringUtils;
 import com.clougence.utils.io.IOUtils;
 
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -46,18 +44,18 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class SysInitService {
 
-    private static final String INIT_DB_CREATE_IF_MISSING = "clougence.init.db.createIfMissing";
+    private static final String INIT_DB_CREATE_IF_MISSING    = "clougence.init.db.createIfMissing";
     private static final String INIT_DB_REBUILD_IF_NOT_EMPTY = "clougence.init.db.rebuildIfNotEmpty";
-    private static final String REQUIRED_DB_CHARSET = "utf8mb4";
-    private static final String REQUIRED_DB_COLLATION = "utf8mb4_general_ci";
-    private static final String SCHEMA_EXISTS_SQL = "SELECT COUNT(*) FROM information_schema.schemata WHERE schema_name = ?";
-    private static final String SCHEMA_CHARSET_SQL = "SELECT default_character_set_name FROM information_schema.schemata WHERE schema_name = ?";
-    private static final String TABLE_COUNT_SQL = "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = ?";
+    private static final String REQUIRED_DB_CHARSET          = "utf8mb4";
+    private static final String REQUIRED_DB_COLLATION        = "utf8mb4_general_ci";
+    private static final String SCHEMA_EXISTS_SQL            = "SELECT COUNT(*) FROM information_schema.schemata WHERE schema_name = ?";
+    private static final String SCHEMA_CHARSET_SQL           = "SELECT default_character_set_name FROM information_schema.schemata WHERE schema_name = ?";
+    private static final String TABLE_COUNT_SQL              = "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = ?";
 
     @Resource
     private SysInitDefService   defService;
-    private static final String ALONE_CONFIG   = "alone.properties";
-    private static final String CONSOLE_CONFIG = "console.properties";
+    private static final String ALONE_CONFIG                 = "alone.properties";
+    private static final String CONSOLE_CONFIG               = "console.properties";
 
     // 数据库测试
     // ========================================================================
@@ -90,10 +88,9 @@ public class SysInitService {
 
     /**  应用初始化配置（完整模式：写配置 + Flyway 迁移 + 更新管理员） */
     public void applyInitConfig(Map<String, String> userConfig) throws Exception {
-        log.info("[SysInitService] Applying initialization config, createIfMissing={}, rebuildIfNotEmpty={}, adminEmail={}",
-            userConfig.getOrDefault(INIT_DB_CREATE_IF_MISSING, "false"),
-            userConfig.getOrDefault(INIT_DB_REBUILD_IF_NOT_EMPTY, "false"),
-            userConfig.get(InitSeedConstants.RUNTIME_ADMIN_EMAIL_KEY));
+        log.info("[SysInitService] Applying initialization config, createIfMissing={}, rebuildIfNotEmpty={}, adminEmail={}", userConfig
+            .getOrDefault(INIT_DB_CREATE_IF_MISSING, "false"), userConfig
+                .getOrDefault(INIT_DB_REBUILD_IF_NOT_EMPTY, "false"), userConfig.get(InitSeedConstants.RUNTIME_ADMIN_EMAIL_KEY));
 
         // 1. 按 schema 逐行替换
         replaceConfigLines(userConfig);
@@ -154,12 +151,7 @@ public class SysInitService {
         DatabaseInspection inspection = inspectDatabase(jdbcUrl, dbUser, dbPass, false);
         boolean bootstrapAdmin = !inspection.databaseExists || inspection.empty || rebuildIfNotEmpty;
 
-        log.info("[SysInitService] Updating DB config, bootstrapAdmin={}, databaseExists={}, empty={}, rebuildIfNotEmpty={}, adminEmail={}",
-            bootstrapAdmin,
-            inspection.databaseExists,
-            inspection.empty,
-            rebuildIfNotEmpty,
-            adminEmail);
+        log.info("[SysInitService] Updating DB config, bootstrapAdmin={}, databaseExists={}, empty={}, rebuildIfNotEmpty={}, adminEmail={}", bootstrapAdmin, inspection.databaseExists, inspection.empty, rebuildIfNotEmpty, adminEmail);
 
         prepareDatabase(jdbcUrl, dbUser, dbPass, createIfMissing, rebuildIfNotEmpty);
         runFlywayMigration(jdbcUrl, dbUser, dbPass, bootstrapAdmin ? adminEmail : null, bootstrapAdmin ? adminPassword : null);
@@ -262,30 +254,30 @@ public class SysInitService {
             try (PreparedStatement stmt = conn.prepareStatement("SELECT id, email FROM rdp_user WHERE uid = ?")) {
                 stmt.setString(1, InitSeedConstants.ADMIN_UID);
                 try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    long existingId = rs.getLong(1);
-                    String existingEmail = rs.getString(2);
-                    log.info("[SysInitService] Admin user found (id={}, email={}), updating...", existingId, existingEmail);
-                    try (PreparedStatement updateStmt = conn.prepareStatement("UPDATE rdp_user SET email = ?, password = ?, user_domain = ? WHERE uid = ?")) {
-                        updateStmt.setString(1, adminEmail);
-                        updateStmt.setString(2, encodedPassword);
-                        updateStmt.setString(3, InitSeedConstants.ADMIN_UID + ".clougence.com");
-                        updateStmt.setString(4, InitSeedConstants.ADMIN_UID);
-                        int affected = updateStmt.executeUpdate();
-                        log.info("[SysInitService] Admin user updated, affected rows: {}", affected);
+                    if (rs.next()) {
+                        long existingId = rs.getLong(1);
+                        String existingEmail = rs.getString(2);
+                        log.info("[SysInitService] Admin user found (id={}, email={}), updating...", existingId, existingEmail);
+                        try (PreparedStatement updateStmt = conn.prepareStatement("UPDATE rdp_user SET email = ?, password = ?, user_domain = ? WHERE uid = ?")) {
+                            updateStmt.setString(1, adminEmail);
+                            updateStmt.setString(2, encodedPassword);
+                            updateStmt.setString(3, InitSeedConstants.ADMIN_UID + ".clougence.com");
+                            updateStmt.setString(4, InitSeedConstants.ADMIN_UID);
+                            int affected = updateStmt.executeUpdate();
+                            log.info("[SysInitService] Admin user updated, affected rows: {}", affected);
+                        }
+                    } else {
+                        log.warn("[SysInitService] Admin user not found by uid={}, inserting new admin user...", InitSeedConstants.ADMIN_UID);
+                        try (PreparedStatement insertStmt = conn
+                            .prepareStatement("INSERT INTO rdp_user (uid, email, password, username, account_type, user_domain, gmt_create, gmt_modified) VALUES (?, ?, ?, 'Trial', 'PRIMARY_ACCOUNT', ?, now(), now())")) {
+                            insertStmt.setString(1, InitSeedConstants.ADMIN_UID);
+                            insertStmt.setString(2, adminEmail);
+                            insertStmt.setString(3, encodedPassword);
+                            insertStmt.setString(4, InitSeedConstants.ADMIN_UID + ".clougence.com");
+                            insertStmt.executeUpdate();
+                        }
+                        log.info("[SysInitService] New admin user inserted: {}", adminEmail);
                     }
-                } else {
-                    log.warn("[SysInitService] Admin user not found by uid={}, inserting new admin user...", InitSeedConstants.ADMIN_UID);
-                    try (PreparedStatement insertStmt = conn.prepareStatement(
-                        "INSERT INTO rdp_user (uid, email, password, username, account_type, user_domain, gmt_create, gmt_modified) VALUES (?, ?, ?, 'Trial', 'PRIMARY_ACCOUNT', ?, now(), now())")) {
-                        insertStmt.setString(1, InitSeedConstants.ADMIN_UID);
-                        insertStmt.setString(2, adminEmail);
-                        insertStmt.setString(3, encodedPassword);
-                        insertStmt.setString(4, InitSeedConstants.ADMIN_UID + ".clougence.com");
-                        insertStmt.executeUpdate();
-                    }
-                    log.info("[SysInitService] New admin user inserted: {}", adminEmail);
-                }
                 }
             }
         } catch (SQLException e) {
@@ -331,7 +323,6 @@ public class SysInitService {
 
             try (ConfigurableApplicationContext ctx = app.run()) {
                 ctx.getBean(InitConsolePluginLoader.class).loadPlugin(InitTaskApplication.class.getClassLoader());
-                ctx.getBean(RdpFixInnerUser.class).init();
                 ctx.getBean(RdpFixUserRole.class).init();
                 ctx.getBean(DmFixSecRules.class).init();
                 ctx.getBean(DmFixDmDsConfig.class).init();
@@ -492,15 +483,15 @@ public class SysInitService {
     }
 
     private void createDatabase(String serverJdbcUrl, String username, String password, String databaseName) throws SQLException {
-        executeDatabaseStatement(serverJdbcUrl, username, password,
-                "CREATE DATABASE `" + escapeMysqlIdentifier(databaseName) + "` DEFAULT CHARACTER SET " + REQUIRED_DB_CHARSET + " COLLATE " + REQUIRED_DB_COLLATION);
+        executeDatabaseStatement(serverJdbcUrl, username, password, "CREATE DATABASE `" + escapeMysqlIdentifier(databaseName) + "` DEFAULT CHARACTER SET " + REQUIRED_DB_CHARSET
+                                                                    + " COLLATE " + REQUIRED_DB_COLLATION);
     }
 
     private void recreateDatabase(String serverJdbcUrl, String username, String password, String databaseName) throws SQLException {
         String quotedName = "`" + escapeMysqlIdentifier(databaseName) + "`";
         executeDatabaseStatement(serverJdbcUrl, username, password, "DROP DATABASE " + quotedName);
-        executeDatabaseStatement(serverJdbcUrl, username, password,
-                "CREATE DATABASE " + quotedName + " DEFAULT CHARACTER SET " + REQUIRED_DB_CHARSET + " COLLATE " + REQUIRED_DB_COLLATION);
+        executeDatabaseStatement(serverJdbcUrl, username, password, "CREATE DATABASE " + quotedName + " DEFAULT CHARACTER SET " + REQUIRED_DB_CHARSET + " COLLATE "
+                                                                    + REQUIRED_DB_COLLATION);
     }
 
     private void executeDatabaseStatement(String serverJdbcUrl, String username, String password, String sql) throws SQLException {

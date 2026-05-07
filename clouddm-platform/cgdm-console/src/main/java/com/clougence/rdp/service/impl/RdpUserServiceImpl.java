@@ -5,10 +5,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import jakarta.annotation.Resource;
-
-import com.clougence.clouddm.sdk.security.auth.def.SecSysRole;
-import com.clougence.clouddm.sdk.security.login.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +17,13 @@ import com.clougence.clouddm.base.metadata.rdp.enumeration.GlobalDeployMode;
 import com.clougence.clouddm.base.metadata.rdp.enumeration.GlobalDeploySite;
 import com.clougence.clouddm.platform.plugin.PluginManager;
 import com.clougence.clouddm.sdk.model.feature.RdpFeatureIDs;
+import com.clougence.clouddm.sdk.security.auth.AuthInfo;
+import com.clougence.clouddm.sdk.security.auth.AuthInfoType;
+import com.clougence.clouddm.sdk.security.auth.def.SecSysRole;
+import com.clougence.clouddm.sdk.security.login.LoginProvider;
+import com.clougence.clouddm.sdk.security.login.LoginProviderSpi;
+import com.clougence.clouddm.sdk.security.login.LoginRequest;
+import com.clougence.clouddm.sdk.security.login.LoginResponse;
 import com.clougence.rdp.constant.I18nRdpMsgKeys;
 import com.clougence.rdp.controller.model.enumeration.CheckSubAccountType;
 import com.clougence.rdp.controller.model.enumeration.VerifyCodeType;
@@ -42,8 +45,6 @@ import com.clougence.rdp.dal.model.RdpUserKvBaseConfigDO;
 import com.clougence.rdp.global.config.RdpConsoleConfig;
 import com.clougence.rdp.global.config.user.UserDefinedConfig;
 import com.clougence.rdp.global.exception.ErrorMessageException;
-import com.clougence.clouddm.sdk.security.auth.AuthInfo;
-import com.clougence.clouddm.sdk.security.auth.AuthInfoType;
 import com.clougence.rdp.service.*;
 import com.clougence.rdp.service.enumeration.OpVerifyErrType;
 import com.clougence.rdp.service.enumeration.UserOperationType;
@@ -55,6 +56,7 @@ import com.clougence.utils.CollectionUtils;
 import com.clougence.utils.StringUtils;
 import com.clougence.utils.convert.ConverterUtils;
 
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -208,9 +210,6 @@ public class RdpUserServiceImpl implements RdpUserService {
     }
 
     @Override
-    public RdpUserDO getInnerUser() { return rdpUserMapper.queryPrimaryByPhone(INNER_USER_PHONE); }
-
-    @Override
     public boolean isPrimaryUid(String uid) {
         RdpUserDO userDO = rdpUserMapper.queryByUid(uid);
         if (userDO == null) {
@@ -227,52 +226,6 @@ public class RdpUserServiceImpl implements RdpUserService {
             return false;
         } else {
             return userDO.isMaintainer();
-        }
-    }
-
-    @Override
-    public boolean isCloudManagedUser(String puid, String uid) {
-        // not cloud
-        if (GlobalDeployMode.inPrivate()) {
-            return false;
-        }
-
-        //illegal case
-        if (puid == null || uid == null) {
-            return false;
-        }
-
-        //is primary user
-        if (puid.equals(uid)) {
-            return false;
-        }
-
-        RdpUserDO userDO = rdpUserMapper.queryByUid(uid);
-        return userDO != null && userDO.getBindType() != null && userDO.getBindType() == AccountBindType.MANAGED;
-    }
-
-    @Override
-    public RdpUserDO cloudManagedBindUser(String puid, String uid) {
-        // not cloud
-        if (GlobalDeployMode.inPrivate()) {
-            return null;
-        }
-
-        //illegal case
-        if (puid == null || uid == null) {
-            return null;
-        }
-
-        //is primary user
-        if (puid.equals(uid)) {
-            return null;
-        }
-
-        RdpUserDO userDO = rdpUserMapper.queryByUid(uid);
-        if (userDO != null && userDO.getBindType() != null && userDO.getBindType() == AccountBindType.MANAGED) {
-            return rdpUserMapper.queryByUid(userDO.getBindAccount());
-        } else {
-            return null;
         }
     }
 

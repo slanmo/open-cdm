@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 
 import com.clougence.clouddm.api.common.rpc.ResWebData;
+import com.clougence.clouddm.sdk.security.auth.AuthInfo;
 import com.clougence.rdp.controller.model.fo.*;
 import com.clougence.rdp.controller.model.lo.UpdateUserRoleLO;
 import com.clougence.rdp.controller.model.vo.ListUserVO;
@@ -11,7 +12,6 @@ import com.clougence.rdp.controller.model.vo.PwdValidateExprVO;
 import com.clougence.rdp.controller.model.vo.RdpUserAkSkVO;
 import com.clougence.rdp.dal.enumeration.AccountBindType;
 import com.clougence.rdp.dal.model.RdpUserDO;
-import com.clougence.clouddm.sdk.security.auth.AuthInfo;
 import com.clougence.rdp.service.model.*;
 
 /**
@@ -23,24 +23,13 @@ public interface RdpUserService {
     String UID                        = "uid";
 
     //
-    String INNER_USER_EMAIL           = "inner@clougence.com";
-    String INNER_USER_NAME            = "clougence_inner";
-    String INNER_USER_COMPANY_NAME    = "clougence";
-    String INNER_USER_PHONE           = "15661234567";
-
-    //
     String USER_ROLE                  = "user_role";
     String IS_MAINTAINER              = "is_maintainer";
-    String EMAIL                      = "email";
-    String PHONE                      = "phone";
-    String USERNAME                   = "username";
     String ACCESSKEY                  = "accesskey";
 
     long   OP_PASSWD_TOEKN_EXPIRE_MS  = 30 * 60 * 1000;
-
     long   MFA_TOKEN_EXPIRE_SEC       = 120;
-
-    String DEFAULT_USER_DOMAIN_SUFFIX = "clougence.com";
+    String DEFAULT_USER_DOMAIN_SUFFIX = "cdmgr.com";
 
     //
     String DEFAULT_PWD_REGEX          = "^(?=.*\\d)(?=.*[a-zA-Z])(?=.*[^\\da-zA-Z\\s]).{8,32}$";
@@ -55,18 +44,9 @@ public interface RdpUserService {
 
     RdpUserDO getUserById(long id);
 
-    RdpUserDO getInnerUser();
-
     boolean isPrimaryUid(String uid);
 
     boolean isMaintainer(String uid);
-
-    boolean isCloudManagedUser(String puid, String uid);
-
-    /**
-     * if uid is not cloud managed uid, return null, this method for high performance
-     */
-    RdpUserDO cloudManagedBindUser(String puid, String uid);
 
     PwdValidateExprVO getPwdValidateExprWithoutEscape(String puid);
 

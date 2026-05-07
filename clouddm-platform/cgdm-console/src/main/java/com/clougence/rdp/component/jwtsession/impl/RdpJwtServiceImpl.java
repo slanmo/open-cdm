@@ -9,11 +9,6 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Map;
 
-import jakarta.annotation.Resource;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.WebUtils;
@@ -32,6 +27,10 @@ import com.clougence.rdp.service.RdpUserService;
 import com.clougence.utils.ExceptionUtils;
 import com.clougence.utils.StringUtils;
 
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -170,8 +169,8 @@ public class RdpJwtServiceImpl implements RdpJwtService {
             .withIssuedAt(issueAt)
             .withExpiresAt(expresAt)
             .withJWTId(user.getUid())
-            .withClaim(RdpUserService.EMAIL, user.getEmail())
-            .withClaim(RdpUserService.USERNAME, user.getUsername())
+            .withClaim("email", user.getEmail())
+            .withClaim("username", user.getUsername())
             .withClaim(RdpUserService.ACCESSKEY, user.getAccessKey())
             .sign(algorithm());
     }
