@@ -24,6 +24,7 @@ services:
     volumes:
       - cgdm_console_conf:/root/cgdm/console/conf
       - cgdm_console_logs:/root/cgdm/console/logs
+      - cgdm_console_data:/root/cgdm/console/data
     environment:
       APP_WEB_PORT: 8222
       APP_WEB_JWT: "ljgefdgjosdighjeroigh"
@@ -45,6 +46,7 @@ services:
     volumes:
       - cgdm_sidecar_conf:/root/cgdm/sidecar/conf
       - cgdm_sidecar_logs:/root/cgdm/sidecar/logs
+      - cgdm_sidecar_data:/root/cgdm/sidecar/data
     environment:
       APP_WEB_PORT: 8080
       DM_CLIENT_AK: "ak0a2c62tdo1ap2416655mpyx0v36l359p1v5rn782caw8t0qkk1s94b80lfs90"
@@ -56,6 +58,8 @@ services:
 volumes:
   cgdm_console_conf:
   cgdm_console_logs:
+  cgdm_console_data:
   cgdm_sidecar_conf:
   cgdm_sidecar_logs:
+  cgdm_sidecar_data:
   cgdm_mysql_data:

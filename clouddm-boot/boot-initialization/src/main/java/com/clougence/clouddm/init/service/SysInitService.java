@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import com.clougence.clouddm.api.common.GlobalConfUtils;
 import com.clougence.clouddm.init.InitTaskApplication;
 import com.clougence.clouddm.init.component.fixtasks.DmFixDmDsConfig;
+import com.clougence.clouddm.init.component.fixtasks.DmFixDefaultClusterWorker;
 import com.clougence.clouddm.init.component.fixtasks.DmFixSecRules;
 import com.clougence.clouddm.init.component.fixtasks.InitConsolePluginLoader;
 import com.clougence.clouddm.init.component.fixtasks.RdpFixUserRole;
@@ -152,7 +153,7 @@ public class SysInitService {
             }
 
             if (StringUtils.isNotBlank(jdbcUrl) && StringUtils.isNotBlank(dbUser)) {
-                runFixTasks(jdbcUrl, dbUser, dbPass);
+                runFixTasks(jdbcUrl, dbUser, dbPass, true);
             }
 
             InstallUpgradeLogBus.complete("Initialization completed successfully.");
@@ -199,7 +200,7 @@ public class SysInitService {
                 InstallUpgradeLogBus.info("Updating administrator account.");
                 updateAdminUser(jdbcUrl, dbUser, dbPass, adminEmail, adminPassword);
             }
-            runFixTasks(jdbcUrl, dbUser, dbPass);
+            runFixTasks(jdbcUrl, dbUser, dbPass, true);
             InstallUpgradeLogBus.complete("Installation flow completed successfully.");
         } catch (Exception e) {
             InstallUpgradeLogBus.fail("Installation failed.", e);
@@ -234,7 +235,7 @@ public class SysInitService {
 
             runUpgradeMigration(jdbcUrl, dbUser, dbPass);
             if (rebuildIfNotEmpty || createIfMissing) {
-                runFixTasks(jdbcUrl, dbUser, dbPass);
+                runFixTasks(jdbcUrl, dbUser, dbPass, false);
             }
             InstallUpgradeLogBus.complete("Upgrade completed successfully.");
         } catch (Exception e) {
@@ -419,7 +420,7 @@ public class SysInitService {
     /**
      * Starts a temporary non-web Spring container to run fix tasks such as internal user, role, and security rule initialization.
      */
-    private void runFixTasks(String jdbcUrl, String dbUser, String dbPass) {
+    private void runFixTasks(String jdbcUrl, String dbUser, String dbPass, boolean includeDefaultClusterWorker) {
         log.info("[SysInitService] Running fix tasks with temporary Spring context...");
         InstallUpgradeLogBus.info("Running post-migration fix tasks.");
         try {
@@ -435,6 +436,9 @@ public class SysInitService {
                 ctx.getBean(InitConsolePluginLoader.class).loadPlugin(InitTaskApplication.class.getClassLoader());
                 ctx.getBean(RdpFixUserRole.class).init();
                 ctx.getBean(DmFixSecRules.class).init();
+                if (includeDefaultClusterWorker) {
+                    ctx.getBean(DmFixDefaultClusterWorker.class).init();
+                }
                 ctx.getBean(DmFixDmDsConfig.class).init();
                 InstallUpgradeLogBus.info("Post-migration fix tasks completed.");
                 log.info("[SysInitService] Fix tasks completed successfully.");

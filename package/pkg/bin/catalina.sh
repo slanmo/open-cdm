@@ -110,6 +110,7 @@ if [ -z "$APP_PID" ]; then
 fi
 
 RESTART_FLAG_FILE="$APP_HOME/.restarting"
+STARTUP_CHECK_SCRIPT="$PRGDIR/catalina-check.sh"
 
 # Bugzilla 37848: When no TTY is available, don't output to console
 have_tty=0
@@ -197,6 +198,15 @@ has_restart_flag() {
   [ -f "$RESTART_FLAG_FILE" ]
 }
 
+run_startup_checks() {
+  if [ ! -x "$STARTUP_CHECK_SCRIPT" ]; then
+    echo "Missing startup check script: $STARTUP_CHECK_SCRIPT" >&2
+    exit 1
+  fi
+
+  "$STARTUP_CHECK_SCRIPT" "$JAVA_CMD"
+}
+
 restart_after_exit_if_needed() {
   local watched_pid="$1"
   shift
@@ -226,6 +236,8 @@ run_clouddm() {
 
 #start CloudDM
 do_exec() {
+  run_startup_checks
+
   while true; do
     run_clouddm "$@"
     EXIT_CODE=$?
@@ -241,6 +253,7 @@ do_exec() {
 }
 
 do_start() {
+  run_startup_checks
   check_app_pid
   eval "\"$JAVA_CMD\" $JAVA_OPTS $JPDA_OPTS -classpath \"${APP_HOME}\"/bin/plexus-classworlds-*.jar \
     \"-Dclassworlds.conf=${APP_HOME}/bin/app.conf\" \"-Dapp.home=${APP_HOME}\" \"-Dapp.pid=${APP_PID}\" \

@@ -36,6 +36,7 @@ tasks.register('tgz', Tar) {
 
     into("${consolePath}") {
         project.file("$buildDir/emptyFoldersRoot/logs").mkdirs()
+        project.file("$buildDir/emptyFoldersRoot/data").mkdirs()
         from "$buildDir/emptyFoldersRoot"
     }
     into("${consolePath}/bin") {

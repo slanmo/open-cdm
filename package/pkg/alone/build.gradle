@@ -29,6 +29,7 @@ tasks.register('tgz', Tar) {
 
     into("${sidecarPath}") {
         project.file("$buildDir/emptyFoldersRoot/logs").mkdirs()
+        project.file("$buildDir/emptyFoldersRoot/data").mkdirs()
         from "$buildDir/emptyFoldersRoot"
     }
     into("${sidecarPath}/bin") {

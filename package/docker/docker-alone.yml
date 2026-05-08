@@ -24,6 +24,7 @@ services:
     volumes:
       - cgdm_alone_conf:/root/cgdm/alone/conf
       - cgdm_alone_logs:/root/cgdm/alone/logs
+      - cgdm_alone_data:/root/cgdm/alone/data
     environment:
       APP_WEB_PORT: 8222
       APP_WEB_JWT: "ljgefdgjosdighjeroigh"
@@ -39,4 +40,5 @@ services:
 volumes:
   cgdm_alone_conf:
   cgdm_alone_logs:
+  cgdm_alone_data:
   cgdm_mysql_data:

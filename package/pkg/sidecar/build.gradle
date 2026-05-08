@@ -29,6 +29,7 @@ tasks.register('tgz', Tar) {
 
     into("${sidecarPath}") {
         project.file("$buildDir/emptyFoldersRoot/logs").mkdirs()
+        project.file("$buildDir/emptyFoldersRoot/data").mkdirs()
         from "$buildDir/emptyFoldersRoot"
     }
     into("${sidecarPath}/bin") {
@@ -38,11 +39,7 @@ tasks.register('tgz', Tar) {
         filePermissions {
             unix(0755)
         }
-        from "${buildDir}/../../bin/catalina.sh"
-        from "${buildDir}/../../bin/run.sh"
-        from "${buildDir}/../../bin/setenv.sh"
-        from "${buildDir}/../../bin/shutdown.sh"
-        from "${buildDir}/../../bin/startup.sh"
+        from "${buildDir}/../../bin"
     }
     into("${sidecarPath}/bin") {
         from configurations.runtimeClasspath { include "*plexus-classworlds*" }
