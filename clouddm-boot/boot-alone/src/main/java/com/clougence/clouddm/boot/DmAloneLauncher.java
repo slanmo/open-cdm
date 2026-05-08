@@ -17,6 +17,7 @@ import com.clougence.clouddm.console.web.global.exception.PrintErrorUncaughtExcH
 import com.clougence.clouddm.init.InitApplication;
 import com.clougence.clouddm.init.model.SystemStatusResult;
 import com.clougence.clouddm.init.service.InitDBStatusDetector;
+import com.clougence.clouddm.init.service.SysInitDefService;
 import com.clougence.utils.format.DateFormatType;
 
 import lombok.extern.slf4j.Slf4j;
@@ -40,8 +41,7 @@ public class DmAloneLauncher {
         System.setProperty("spring.config.name", "default_alone,alone");
         System.setProperty("app.mode", "embedded");
 
-        SystemStatusResult statusResult = //
-                InitDBStatusDetector.detectDBStatus("default_alone.properties", "alone.properties");
+        SystemStatusResult statusResult = InitDBStatusDetector.detectDBStatus(new SysInitDefService().loadSystemProperties());
         SystemStatus dbStatus = statusResult.getStatus();
         log.info("[DmAloneLauncher] Database status check: {}, reason={}, dbError={}", dbStatus, statusResult.getInitReason(), statusResult.getDbError());
 

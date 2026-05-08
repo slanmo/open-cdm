@@ -112,13 +112,13 @@ export default {
   },
   watch: {
     executionScripts(newScripts, oldScripts) {
-      const completedScriptName = this.findCompletedScriptName(newScripts, oldScripts);
-      if (!completedScriptName) {
+      const anchorScriptName = this.findAutoScrollAnchorScriptName(newScripts);
+      if (!anchorScriptName || anchorScriptName === this.findAutoScrollAnchorScriptName(oldScripts)) {
         return;
       }
 
       this.$nextTick(() => {
-        this.scrollToScript(completedScriptName);
+        this.scrollToScript(anchorScriptName);
       });
     }
   },
@@ -172,29 +172,21 @@ export default {
       delete this.scriptEntryRefs[scriptName];
     },
     isErrorDetailExpanded(scriptItem) {
-      return Boolean(scriptItem && scriptItem.scriptName) && this.expandedScriptName === scriptItem.scriptName;
+      return Boolean(scriptItem && scriptItem.scriptName) && scriptItem.status === 'ERROR' && this.expandedScriptName === scriptItem.scriptName;
     },
-    findCompletedScriptName(newScripts, oldScripts) {
-      if (!Array.isArray(newScripts) || !Array.isArray(oldScripts) || !oldScripts.length) {
+    findAutoScrollAnchorScriptName(scripts) {
+      if (!Array.isArray(scripts) || !scripts.length) {
         return '';
       }
 
-      const previousStatusMap = new Map(
-        oldScripts.filter((item) => item && item.scriptName).map((item) => [item.scriptName, item.status || 'PENDING'])
-      );
-
-      for (let index = newScripts.length - 1; index >= 0; index -= 1) {
-        const scriptItem = newScripts[index];
-        if (!scriptItem || !scriptItem.scriptName || !['SUCCESS', 'ERROR'].includes(scriptItem.status)) {
-          continue;
-        }
-
-        if (previousStatusMap.get(scriptItem.scriptName) !== scriptItem.status) {
-          return scriptItem.scriptName;
-        }
+      const runningIndex = scripts.findIndex((item) => item && item.scriptName && item.status === 'RUNNING');
+      if (runningIndex < 0) {
+        return '';
       }
 
-      return '';
+      const anchorIndex = Math.max(runningIndex - 2, 0);
+      const anchorItem = scripts[anchorIndex];
+      return anchorItem && anchorItem.scriptName ? anchorItem.scriptName : '';
     },
     scrollToScript(scriptName) {
       const targetElement = this.scriptEntryRefs[scriptName];
@@ -204,7 +196,7 @@ export default {
 
       targetElement.scrollIntoView({
         behavior: 'smooth',
-        block: 'nearest',
+        block: 'start',
         inline: 'nearest'
       });
     },

@@ -100,16 +100,24 @@ public class SysInitDefService {
         Properties props = new Properties();
         try {
             if (isAloneMode()) {
-                loadClasspathProperties(props, DEFAULT_ALONE_CONFIG);
-                loadAppHomeProperties(props, ALONE_CONFIG);
+                loadRuntimeProperties(props, DEFAULT_ALONE_CONFIG, ALONE_CONFIG);
             } else {
-                loadClasspathProperties(props, DEFAULT_CONSOLE_CONFIG);
-                loadAppHomeProperties(props, CONSOLE_CONFIG);
+                loadRuntimeProperties(props, DEFAULT_CONSOLE_CONFIG, CONSOLE_CONFIG);
             }
+            overlaySystemProperties(props);
         } catch (Exception e) {
             log.error("[SysInitService] Failed to load runtime properties", e);
         }
         return props;
+    }
+
+    private void loadRuntimeProperties(Properties props, String defaultConfigName, String runtimeConfigName) throws IOException {
+        loadClasspathProperties(props, defaultConfigName);
+        if (hasExplicitAppHome()) {
+            loadAppHomeProperties(props, runtimeConfigName);
+        } else {
+            loadClasspathProperties(props, runtimeConfigName);
+        }
     }
 
     private void loadClasspathProperties(Properties props, String resourcePath) throws IOException {
@@ -129,6 +137,16 @@ public class SysInitDefService {
             props.load(input);
         }
     }
+
+    private void overlaySystemProperties(Properties props) {
+        System.getProperties().forEach((key, value) -> {
+            if (key instanceof String && value != null) {
+                props.setProperty((String) key, String.valueOf(value));
+            }
+        });
+    }
+
+    private boolean hasExplicitAppHome() { return StringUtils.isNotBlank(System.getProperty("app.home")); }
 
     private boolean isAloneMode() { return "embedded".equals(System.getProperty("app.mode")); }
 }

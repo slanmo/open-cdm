@@ -403,6 +403,7 @@ export default {
         if (this.isUpgradeMode) {
           return true;
         }
+
         return !this.dbMissingFields.length && Boolean(this.dbTestResult && this.dbTestResult.canProceed);
       }
       if (!this.isUpgradeMode && this.currentStep === 1) {
@@ -504,7 +505,8 @@ export default {
       const payload = {
         'spring.datasource.jdbcurl': this.formValues['spring.datasource.jdbcurl'] || '',
         'spring.datasource.username': this.formValues['spring.datasource.username'] || '',
-        'spring.datasource.password': this.formValues['spring.datasource.password'] || ''
+        'spring.datasource.password': this.formValues['spring.datasource.password'] || '',
+        [INIT_DB_REBUILD_IF_NOT_EMPTY]: this.formValues[INIT_DB_REBUILD_IF_NOT_EMPTY] || ''
       };
 
       try {
@@ -778,13 +780,21 @@ export default {
       this.applying = false;
 
       if (this.isUpgradeMode) {
-        return this.handleUpgrade();
+        return this.handleUpgrade({ omitRebuild: true });
       }
 
-      return this.handleApply();
+      return this.handleApply({ omitRebuild: true });
     },
 
-    async handleUpgrade() {
+    buildExecutionPayload({ omitRebuild = false } = {}) {
+      const payload = { ...this.formValues };
+      if (omitRebuild) {
+        delete payload[INIT_DB_REBUILD_IF_NOT_EMPTY];
+      }
+      return payload;
+    },
+
+    async handleUpgrade(options = {}) {
       this.applying = true;
       this.restartTimedOut = false;
       this.restartStatusType = 'info';
@@ -793,7 +803,7 @@ export default {
       this.operationErrorDetail = '';
 
       try {
-        const res = await this.$services.dmInitUpgrade({ data: {}, modal: false });
+        const res = await this.$services.dmInitUpgrade({ data: this.buildExecutionPayload(options), modal: false });
         if (!res.success) {
           this.restartStatusType = 'error';
           this.restartStatusMessage = this.$t('initialization.upgradeFailed');
@@ -817,7 +827,7 @@ export default {
       }
     },
 
-    async handleApply() {
+    async handleApply(options = {}) {
       this.applying = true;
       this.restartTimedOut = false;
       this.restartStatusType = '';
@@ -825,7 +835,7 @@ export default {
       this.executionScripts = resetExecutionScriptsForRetry(this.executionScripts);
       this.operationErrorDetail = '';
       try {
-        const payload = { ...this.formValues };
+        const payload = this.buildExecutionPayload(options);
 
         const endpoint = this.mode === 'dbOnly' ? this.$services.dmInitUpdateDbConfig : this.$services.dmInitApplyConfig;
 

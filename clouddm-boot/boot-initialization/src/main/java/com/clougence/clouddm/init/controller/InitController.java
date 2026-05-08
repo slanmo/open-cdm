@@ -2,6 +2,7 @@ package com.clougence.clouddm.init.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Collections;
 
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -86,9 +87,9 @@ public class InitController {
 
     @RequestAuth(strategy = RequestAuth.AuthStrategy.Ignore)
     @RequestMapping(value = "/upgrade", method = { RequestMethod.POST })
-    public ResWebData<?> upgrade() {
+    public ResWebData<?> upgrade(@RequestBody(required = false) Map<String, String> config) {
         try {
-            initService.upgradeSystem();
+            initService.upgradeSystem(config == null ? Collections.emptyMap() : config);
             return ResWebDataUtils.buildSuccess(null);
         } catch (Exception e) {
             return ResWebDataUtils.buildError(initService.buildDetailedErrorMessage(e));

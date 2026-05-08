@@ -86,6 +86,10 @@ public class SysInitService {
     }
 
     public List<String> previewExecutionScripts(Map<String, String> userConfig) {
+        if (shouldRunAllScripts(userConfig)) {
+            return DmFlywayInit.listAllScriptNames();
+        }
+
         String jdbcUrl = userConfig == null ? null : userConfig.get("spring.datasource.jdbcurl");
         String username = userConfig == null ? null : userConfig.get("spring.datasource.username");
         String password = userConfig == null ? null : userConfig.get("spring.datasource.password");
@@ -201,11 +205,19 @@ public class SysInitService {
         }
     }
 
-    public void upgradeSystem() throws Exception {
+    public void upgradeSystem(Map<String, String> userConfig) throws Exception {
+        if (userConfig != null && !userConfig.isEmpty()) {
+            replaceConfigLines(userConfig);
+        }
+
         Properties props = this.defService.loadSystemProperties();
-        String jdbcUrl = props.getProperty("spring.datasource.jdbcurl");
-        String dbUser = props.getProperty("spring.datasource.username");
-        String dbPass = props.getProperty("spring.datasource.password");
+        String jdbcUrl = resolveConfigValue(userConfig, props, "spring.datasource.jdbcurl");
+        String dbUser = resolveConfigValue(userConfig, props, "spring.datasource.username");
+        String dbPass = resolveConfigValue(userConfig, props, "spring.datasource.password");
+        boolean createIfMissing = userConfig != null && userConfig.containsKey(INIT_DB_CREATE_IF_MISSING)
+            && Boolean.parseBoolean(userConfig.get(INIT_DB_CREATE_IF_MISSING));
+        boolean rebuildIfNotEmpty = userConfig != null && userConfig.containsKey(INIT_DB_REBUILD_IF_NOT_EMPTY)
+            && Boolean.parseBoolean(userConfig.get(INIT_DB_REBUILD_IF_NOT_EMPTY));
 
         InstallUpgradeLogBus.start("upgrade", jdbcUrl);
         try {
@@ -213,7 +225,15 @@ public class SysInitService {
                 throw new IllegalStateException("Database configuration is missing.");
             }
 
+            if (createIfMissing || rebuildIfNotEmpty) {
+                InstallUpgradeLogBus.info("Preparing database before upgrade.");
+                prepareDatabase(jdbcUrl, dbUser, dbPass, createIfMissing, rebuildIfNotEmpty);
+            }
+
             runUpgradeMigration(jdbcUrl, dbUser, dbPass);
+            if (rebuildIfNotEmpty || createIfMissing) {
+                runFixTasks(jdbcUrl, dbUser, dbPass);
+            }
             InstallUpgradeLogBus.complete("Upgrade completed successfully.");
         } catch (Exception e) {
             InstallUpgradeLogBus.fail("Upgrade failed.", e);
@@ -504,6 +524,17 @@ public class SysInitService {
         }
 
         log.info("[SysInitService] Target database {} exists with data, keeping existing schema and proceeding with migration/fix tasks", inspection.databaseName);
+    }
+
+    private boolean shouldRunAllScripts(Map<String, String> userConfig) {
+        return Boolean.parseBoolean(resolveConfigValue(userConfig, null, INIT_DB_REBUILD_IF_NOT_EMPTY));
+    }
+
+    private String resolveConfigValue(Map<String, String> userConfig, Properties props, String key) {
+        if (userConfig != null && userConfig.containsKey(key)) {
+            return userConfig.get(key);
+        }
+        return props == null ? null : props.getProperty(key);
     }
 
     private DatabaseInspection inspectDatabase(String jdbcUrl, String username, String password, boolean verifyTargetConnection) throws SQLException {

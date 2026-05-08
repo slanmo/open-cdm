@@ -47,15 +47,6 @@ export default {
       return this.executionScripts.map((item) => (typeof item === 'string' ? item : item && item.scriptName)).filter(Boolean);
     },
     summaryItems() {
-      if (this.workflowMode === 'upgrade') {
-        return [
-          {
-            key: 'spring.datasource.jdbcurl',
-            value: this.formValues['spring.datasource.jdbcurl'] || ''
-          }
-        ];
-      }
-
       const items = this.fieldDefs.map((field) => ({
         key: field.propertyKey,
         value: this.formValues[field.propertyKey] || ''

@@ -18,6 +18,7 @@ import com.clougence.clouddm.console.web.global.rsocket.RSocketServerServiceImpl
 import com.clougence.clouddm.init.InitApplication;
 import com.clougence.clouddm.init.service.InitDBStatusDetector;
 import com.clougence.clouddm.init.model.SystemStatusResult;
+import com.clougence.clouddm.init.service.SysInitDefService;
 import com.clougence.utils.format.DateFormatType;
 
 import lombok.extern.slf4j.Slf4j;
@@ -38,8 +39,7 @@ public class DmConsoleLauncher {
         Thread.setDefaultUncaughtExceptionHandler(new PrintErrorUncaughtExcHandler());
         System.setProperty("spring.config.name", "default_console,console");
 
-        SystemStatusResult statusResult =//
-                InitDBStatusDetector.detectDBStatus("default_console.properties", "console.properties");
+        SystemStatusResult statusResult = InitDBStatusDetector.detectDBStatus(new SysInitDefService().loadSystemProperties());
         SystemStatus dbStatus = statusResult.getStatus();
         log.info("[DmConsoleLauncher] Database status check: {}, reason={}, dbError={}", dbStatus, statusResult.getInitReason(), statusResult.getDbError());
 
