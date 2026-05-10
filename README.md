@@ -63,80 +63,99 @@
 
 ## 快速开始
 
+CloudDM 支持 **单机模式（Alone）** 和 **集群模式（Console + Sidecar）**，提供安装包、Docker、Kubernetes 三种部署方式。
+
 ### 安装包方式
 
-```text
-环境准备
-- 安装包
-- 环境需准备好 JDK 21
-- 准备一台 MySQL(8.0+) 存放程序数据
+解压后直接启动，初始化程序会自动引导配置。
 
-安装步骤
-- 解压安装包
-- 进入 bin 目录运行 startup.sh 启动产品
-- alone 
+#### 单机模式
 
+```bash
+tar -xzf cgdm-alone.tar.gz
+cd cgdm-alone && bin/startup.sh
 ```
+
+浏览器访问 `http://localhost:8222`，按初始化向导完成配置即可使用。
+
+#### 集群模式
+
+```bash
+# 1. 安装 Console
+tar -xzf cgdm-console.tar.gz
+cd cgdm-console && bin/startup.sh
+
+# 2. 在 console 中添加机器
+# (略)
+
+# 3. 安装和配置 sidecar
+tar -xzf cgdm-sidecar.tar.gz
+cd ../cgdm-sidecar && bin/startup.sh
+```
+
+---
 
 ### Docker 方式
 
+使用 Compose 一键启动（当前最新版本 `3.0.7`，按需替换版本号）。
+
+#### 单机模式
+
+```bash
+# x86_64
+docker compose -f docker-alone-x86_64-3.0.7.yml up -d
+
+# arm64
+docker compose -f docker-alone-arm64-3.0.7.yml up -d
+```
+
+#### 集群模式
+
+```bash
+# x86_64
+docker compose -f docker-cluster-x86_64-3.0.7.yml up -d
+
+# arm64
+docker compose -f docker-cluster-arm64-3.0.7.yml up -d
+```
+
+---
+
 ### Kubernetes 方式
 
-- 支持 Docker 部署（单机模式、集群模式）
-- 支持 Kubernetes 部署（单机模式、集群模式）
+确保镜像已推送至仓库，直接 apply 部署（当前最新版本 `3.0.7`，按需替换版本号）。
 
-```shell
-docker compose -f docker-alone-arm64-<version>.yml up -d
-```
-
-## 开发编译
-
-### 开发环境
-
-- JDK21+
-- Gradle 9.5.0+
-- IntelliJ IDEA 或 Eclipse
-- Git
-- Linux 或 MacOS 或有 Bash 的 Windows 环境
-
-### 启动入口
-
-- `boot-alone` 项目，单机模式启动入口
-- `boot-console` 项目，集群模式 Console 控制台启动入口
-- `boot-sidecar` 项目，集群模式 SQL 执行器启动入口
-
-### 本地编译
+#### 单机模式
 
 ```bash
-# 开发环境构建
-./all_build.sh
+# x86_64
+kubectl apply -f k8s-alone-x86_64-3.0.7.yml
 
-# 仅更新前端资源
-./all_build.sh web
-
-# 生成 tgz 安装包
-cd package && ./package.sh
-
-# 生成 tgz 安装包并构建 Docker & Kubernetes 镜像
-cd package && ./package.sh --docker
-
-# 指定架构构建 Docker
-cd package && ./package.sh --docker=arm64
-cd package && ./package.sh --docker=x86_64
+# arm64
+kubectl apply -f k8s-alone-arm64-3.0.7.yml
 ```
+
+#### 集群模式
 
 ```bash
-# 版本号约定
-gradle.properties 中的 cg.clouddm.main.version 字段
+# x86_64
+kubectl apply -f k8s-cluster-x86_64-3.0.7.yml
+
+# arm64
+kubectl apply -f k8s-cluster-arm64-3.0.7.yml
 ```
 
-## 仓库结构
+---
 
-- `clouddm-boot`：console、sidecar、alone 启动入口，以及初始化升级模块。
-- `clouddm-platform`：Console、Web、Sidecar、插件装载和共享平台能力。
-- `clouddm-plugins`：数据源插件、认证 Provider、功能插件和内部扩展。
-- `clouddm-utils`：独立的模块、框架、工具
-- `package`：tgz 打包、Docker 镜像、compose 模板和交付输出。
+### 访问产品
+
+所有模式启动后，通过浏览器访问：
+
+```
+http://localhost:8222
+```
+
+首次访问会进入初始化向导，完成数据库初始化和管理员账号创建后即可使用。
 
 ## 开源协议
 
