@@ -106,28 +106,19 @@ cd package && ./package.sh --docker=x86_64
 - IntelliJ IDEA 用户可安装 **Eclipse Code Formatter** 插件，导入 `codeformat.xml`
 - 缩进：4 个空格
 - 编码：UTF-8
-
-### 代码风格要点
-
-- 类名使用 UpperCamelCase
-- 方法名和变量名使用 lowerCamelCase
-- 常量使用 UPPER_SNAKE_CASE
-- 包名全小写
-- 适当添加 JavaDoc 注释，尤其是公开 API
+- 保持统一文件头，添加版权说明。
 
 ### 编程风格
 
-1. **保持统一文件头**：Java 源文件默认保留项目现有的 Apache 2.0 版权头，不新增自定义版权说明。
-2. **沿用已有命名模式**：数据库实体使用 `DO` 后缀，服务实现使用 `Impl` 后缀，常量类使用 `*Constants` / `*Keys` 后缀，避免引入新的命名体系。
-3. **按职责拆分包结构**：优先沿用 `controller`、`service`、`dal`、`model`、`config`、`util`、`global` 等分层，不把 Controller、DAL、插件注册逻辑混在同一个类中。
-4. **优先使用项目基础设施**：字符串、JSON、异常、线程等通用能力优先复用 `com.clougence.utils` 及现有 SDK / 平台工具类，不重复封装相同功能。
-5. **统一返回与异常处理方式**：Web / RPC 层优先复用现有的 `ResWebData`、`ResWebDataUtils`、全局异常处理和错误码体系，不直接拼接零散响应结构。
-6. **日志保持简洁且带上下文**：统一使用 Lombok 的 `@Slf4j`，错误日志同时输出上下文信息和异常堆栈；避免无上下文的 `log.error("failed")` 这类日志。
-7. **常量集中定义**：公共常量放入专门的常量类中，以 `public static final` 暴露，并通过私有构造函数禁止实例化，不在业务代码中散落硬编码字符串。
-8. **插件遵循统一装配模式**：插件模块实现 `DsPlugin`，在 `loadPlugin` 中完成工具、服务、I18n 等注册，避免在静态代码块或隐式副作用中做插件初始化。
-9. **状态与并发控制显式处理**：有状态服务优先通过 `Atomic*`、显式锁、生命周期接口（如 `UnifiedPostConstruct`）管理初始化与停止流程，不依赖隐含时序。
-10. **收紧可见性，按需暴露 API**：默认使用 `private`，能用 `private final` 的字段不要放宽；`public` 主要用于接口实现、Spring Bean 暴露点、SDK / SPI 扩展点，避免过度开放。
-
+- 数据库实体使用 `DO` 后缀，表单对象使用 `FO` 后缀，请求响应数据使用 `VO` 后缀。
+- 沿用已有命名模式，避免引入新的命名体系。
+- 按职责拆分包结构，优先沿用 `controller`、`service`、`dal`、`model`、`config`、`util`、`global` 等分层。
+- 优先使用项目基础设施 `com.clougence.utils` 及现有 SDK / 平台工具类，不重复封装相同功能。
+- 统一使用 Lombok 的 `@Slf4j`，错误日志同时输出上下文信息和异常堆栈，避免无意义的异常。
+- 收紧可见性，按需暴露 API，默认使用 `private`；谨慎使用 `public` 修饰符。
+- 严格遵守单一职责、代码包要保证稳定单向依赖，禁止循环依赖
+- 除特别情况，不应该出现巨型类和方法。每个类格式化后控制在 500 行左右。
+- 不要过度拆分小方法和零碎类。
 
 ### 测试
 
