@@ -53,7 +53,8 @@ build_base_image() {
   local dockerfile="$SCRIPT_DIR/docker/${plat}/base/Dockerfile"
   local tag; tag="$(base_image_tag "$plat")"
   echo "  building base image: $tag ($(docker_platform "$plat"))"
-  DOCKER_DEFAULT_PLATFORM="$(docker_platform "$plat")" docker build \
+  BUILDX_NO_DEFAULT_ATTESTATIONS=1 DOCKER_DEFAULT_PLATFORM="$(docker_platform "$plat")" docker build \
+    --provenance=false --sbom=false \
     -t "$tag" \
     -f "$dockerfile" \
     "$SCRIPT_DIR"
@@ -64,7 +65,8 @@ build_service_image() {
   local dockerfile="$SCRIPT_DIR/docker/${plat}/${svc}/Dockerfile"
   local tag; tag="clougence/cgdm-${svc}:$(image_tag "$plat" "$VERSION")"
   echo "  building $svc: $tag ($(docker_platform "$plat"))"
-  DOCKER_DEFAULT_PLATFORM="$(docker_platform "$plat")" docker build \
+  BUILDX_NO_DEFAULT_ATTESTATIONS=1 DOCKER_DEFAULT_PLATFORM="$(docker_platform "$plat")" docker build \
+    --provenance=false --sbom=false \
     --build-arg BASE_IMAGE="$(base_image_tag "$plat")" \
     -t "$tag" \
     -f "$dockerfile" \
