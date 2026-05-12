@@ -21,14 +21,7 @@ for arg in "$@"; do
       DOCKER_ARCH="${arg#--docker=}"
       ;;
     --docker)
-      case "$(uname -m)" in
-        arm64|aarch64) DOCKER_ARCH="arm64" ;;
-        x86_64|amd64)  DOCKER_ARCH="x86_64" ;;
-        *)
-          echo "unsupported architecture: $(uname -m), use --docker=arm64 or --docker=x86_64"
-          exit 1
-          ;;
-      esac
+      DOCKER_ARCH="all"
       ;;
     *)
       echo "unknown argument: $arg"
@@ -38,8 +31,8 @@ for arg in "$@"; do
   esac
 done
 
-if [ -n "$DOCKER_ARCH" ] && [ "$DOCKER_ARCH" != "arm64" ] && [ "$DOCKER_ARCH" != "x86_64" ]; then
-  echo "invalid docker arch: $DOCKER_ARCH, must be arm64 or x86_64"
+if [ -n "$DOCKER_ARCH" ] && [ "$DOCKER_ARCH" != "arm64" ] && [ "$DOCKER_ARCH" != "x86_64" ] && [ "$DOCKER_ARCH" != "all" ]; then
+  echo "invalid docker arch: $DOCKER_ARCH, must be arm64, x86_64, or all"
   exit 1
 fi
 
@@ -63,7 +56,14 @@ echo "[BUILD] completed. version=${VERSION}"
 echo ""
 
 if [ -n "$DOCKER_ARCH" ]; then
-  echo "[DOCKER] building $DOCKER_ARCH images, version=${VERSION}..."
-  bash "$SCRIPT_DIR/docker/$DOCKER_ARCH/build.sh" "$VERSION"
-  echo "[DOCKER] $DOCKER_ARCH build completed."
+  if [ "$DOCKER_ARCH" = "all" ]; then
+    echo "[DOCKER] building all platforms, version=${VERSION}..."
+    bash "$SCRIPT_DIR/docker/x86_64/build.sh" "$VERSION"
+    bash "$SCRIPT_DIR/docker/arm64/build.sh" "$VERSION"
+    echo "[DOCKER] all platforms build completed."
+  else
+    echo "[DOCKER] building $DOCKER_ARCH images, version=${VERSION}..."
+    bash "$SCRIPT_DIR/docker/$DOCKER_ARCH/build.sh" "$VERSION"
+    echo "[DOCKER] $DOCKER_ARCH build completed."
+  fi
 fi
