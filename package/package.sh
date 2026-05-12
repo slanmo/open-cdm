@@ -50,8 +50,30 @@ HELP
   esac
 done
 
-# 无参数等同 --build
-[ "$DO_BUILD" -eq 0 ] && [ "$DO_DOCKER" -eq 0 ] && DO_BUILD=1
+# 无参数打印帮助
+if [ "$DO_BUILD" -eq 0 ] && [ "$DO_DOCKER" -eq 0 ]; then
+  echo "version: $VERSION"
+  echo ""
+  cat <<'HELP'
+Usage: ./package.sh [OPTIONS]...
+
+Build modes (at least one required):
+  --build               compile + tgz packaging (Gradle build)
+  --docker [ARCH]       build Docker images (requires --build first)
+                          ARCH: arm64 | x86_64 (default: all platforms)
+
+Examples:
+  ./package.sh --build                      compile & package only
+  ./package.sh --docker                     compile → build all Docker images
+  ./package.sh --build --docker             compile + all Docker images
+  ./package.sh --build --docker x86_64      compile + x86_64 Docker images only
+
+Prerequisites:
+  Gradle + JDK configured
+  Docker installed and running
+HELP
+  exit 0
+fi
 
 echo "version: $VERSION"
 

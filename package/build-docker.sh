@@ -83,7 +83,7 @@ export_service_image() {
 
 generate_compose_files() {
   local plat="$1"
-  local compose_src="$SCRIPT_DIR"
+  local compose_src="$SCRIPT_DIR/docker"
   for name in alone cluster; do
     local src="$compose_src/docker-${name}.yml"
     local dst="$PACKAGE_BUILD_DIR/docker-${name}-$(image_tag "$plat" "$VERSION").yml"
@@ -96,7 +96,7 @@ generate_compose_files() {
 
 generate_k8s_files() {
   local plat="$1"
-  local k8s_src="$SCRIPT_DIR"
+  local k8s_src="$SCRIPT_DIR/docker"
   for name in alone cluster; do
     local src="$k8s_src/k8s-${name}.yml"
     local dst="$PACKAGE_BUILD_DIR/k8s-${name}-$(image_tag "$plat" "$VERSION").yml"
