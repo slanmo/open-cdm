@@ -1,49 +1,42 @@
 # CloudDM Deployment Guide
 
-This document combines three types of CloudDM deployment guidance into a single guide: online image deployment, China registry acceleration, and local deployment after packaging from source.
+CloudDM supports **Standalone mode (Alone)** and **Cluster mode (Console + Sidecar)**, with deployment methods including **install packages**, **Docker**, and **Kubernetes**. This guide walks through the complete process from packaging to deployment.
+- In Standalone mode, the Web console, Sidecar, and metadata database run together in a single container or a single install package, making it suitable for small-scale use.
+- The main characteristic of Cluster mode is unified authorized access for databases across multiple regions.
 
-CloudDM supports two runtime modes: **Standalone (Alone)** and **Cluster (Console + Sidecar)**. Supported deployment methods include **install packages**, **Docker**, and **Kubernetes**.
 
-> If you build from the source repository locally, the install packages, Docker Compose files, and Kubernetes yml files described in this document will be generated automatically under `open-cdm/package/build` after running `open-cdm/package/package.sh --build --docker`. No manual authoring is required.
-
----
-
-## 1. Version and Deployment Overview
-
-Current repository version: **`3.0.7`**
+## 1. Overview
 
 | Dimension | Supported Content |
 |-----------|-------------------|
 | Runtime modes | Alone, Console + Sidecar |
-| Deployment methods | Install packages, Docker, Kubernetes |
+| Deployment methods | Install package, Docker, Kubernetes |
 | Online image registries | Global `docker.io/bladepipe`<br/>China `cloudcanal-registry.cn-shanghai.cr.aliyuncs.com/clougence` |
 | Local packaging output directory | `open-cdm/package/build` |
 
 ### 1.1 Global Images
 
-Global images are hosted on Docker Hub and are intended for regions outside mainland China:
+Global images are hosted on Docker Hub and are suitable for regions outside mainland China:
 
 | Component | Image |
 |-----------|-------|
-| Alone | `bladepipe/cgdm-alone:3.0.7` |
-| Console | `bladepipe/cgdm-console:3.0.7` |
-| Sidecar | `bladepipe/cgdm-sidecar:3.0.7` |
+| Alone | `bladepipe/cgdm-alone:<target_version>` |
+| Console | `bladepipe/cgdm-console:<target_version>` |
+| Sidecar | `bladepipe/cgdm-sidecar:<target_version>` |
 
 ### 1.2 China Images
 
-China images are hosted on Alibaba Cloud Container Registry and are intended for mainland China network environments:
-
-| Component | x86_64 / amd64 | arm64 |
-|-----------|----------------|-------|
-| Alone | `cloudcanal-registry.cn-shanghai.cr.aliyuncs.com/clougence/cgdm-alone:3.0.7-amd64` | `cloudcanal-registry.cn-shanghai.cr.aliyuncs.com/clougence/cgdm-alone:3.0.7-arm64` |
-| Console | `cloudcanal-registry.cn-shanghai.cr.aliyuncs.com/clougence/cgdm-console:3.0.7-amd64` | `cloudcanal-registry.cn-shanghai.cr.aliyuncs.com/clougence/cgdm-console:3.0.7-arm64` |
-| Sidecar | `cloudcanal-registry.cn-shanghai.cr.aliyuncs.com/clougence/cgdm-sidecar:3.0.7-amd64` | `cloudcanal-registry.cn-shanghai.cr.aliyuncs.com/clougence/cgdm-sidecar:3.0.7-arm64` |
+| Component | Image |
+|-----------|-------|
+| Alone | `cloudcanal-registry.cn-shanghai.cr.aliyuncs.com/clougence/cgdm-alone:<target_version>` |
+| Console | `cloudcanal-registry.cn-shanghai.cr.aliyuncs.com/clougence/cgdm-console:<target_version>` |
+| Sidecar | `cloudcanal-registry.cn-shanghai.cr.aliyuncs.com/clougence/cgdm-sidecar:<target_version>` |
 
 ---
 
-## 2. Local Packaging and Deployment Artifacts
+## 2. Local Packaging
 
-If you plan to deploy from the source repository locally, it is recommended to package first under `open-cdm/package`.
+To deploy locally from the source repository, you should first package the project under `open-cdm/package`.
 
 ### 2.1 Generate Install Packages Only
 
@@ -58,7 +51,7 @@ This generates:
 - `cgdm-console.tar.gz`
 - `cgdm-sidecar.tar.gz`
 
-### 2.2 Generate Install Packages, Docker Images, and Deployment Manifests
+### 2.2 Docker Images and YML
 
 ```bash
 cd open-cdm/package
@@ -73,37 +66,18 @@ cd open-cdm/package
 ./package.sh --build --docker arm64
 ```
 
-After execution, `open-cdm/package/build` will automatically contain:
+After running, `open-cdm/package/build` will automatically contain:
 
 - Install packages: `cgdm-*.tar.gz`
 - Offline images: `docker-*.tar`
 - Docker Compose files: `docker-alone-*.yml`, `docker-cluster-*.yml`
-- Kubernetes manifests: `k8s-alone-*.yml`, `k8s-cluster-*.yml`
-
-Typical artifacts:
-
-```text
-cgdm-alone.tar.gz
-cgdm-console.tar.gz
-cgdm-sidecar.tar.gz
-docker-alone-x86_64-3.0.7.tar
-docker-console-x86_64-3.0.7.tar
-docker-sidecar-x86_64-3.0.7.tar
-docker-alone-x86_64-3.0.7.yml
-docker-cluster-x86_64-3.0.7.yml
-k8s-alone-x86_64-3.0.7.yml
-k8s-cluster-x86_64-3.0.7.yml
-```
+- Kubernetes files: `k8s-alone-*.yml`, `k8s-cluster-*.yml`
 
 ---
 
-## 3. Standalone (Alone) Deployment
+## 3. Standalone Mode Deployment
 
-Standalone mode runs the web console, Sidecar, and metadata database together in a single container or a single install package. It is suitable for personal evaluation, small-team trials, and local integration testing.
-
-### 3.1 Install Package Deployment
-
-#### Use the locally built install package
+### 3.1 Use the Install Package
 
 ```bash
 tar -xzf cgdm-alone.tar.gz
@@ -111,34 +85,29 @@ cd cgdm-alone
 bin/startup.sh
 ```
 
-After the first startup, open the browser and visit:
+After the first startup, open the following address in your browser:
 
 ```text
 http://localhost:8222
 ```
 
-The system automatically enters the initialization wizard. After completing database initialization and creating the administrator account, the system is ready to use.
+The system automatically enters the initialization wizard. After completing database initialization and administrator account creation, the system is ready to use.
 
-### 3.2 Docker Deployment
-
-#### Global registry
+### 3.2 Use Docker
 
 ```bash
+# One-click startup
 docker run -d --name cgdm-alone -p 8222:8222 bladepipe/cgdm-alone:3.0.7
-```
 
-#### China registry acceleration
-
-```bash
+# China registry acceleration
 docker run -d --name cgdm-alone -p 8222:8222 \
   cloudcanal-registry.cn-shanghai.cr.aliyuncs.com/clougence/cgdm-alone:3.0.7
 ```
 
-#### Persistent data volumes
-
-Using Docker volumes:
+Persistent data volumes:
 
 ```bash
+# Use Docker volumes
 docker run -d --name cgdm-alone \
   -p 8222:8222 \
   -v cgdm_alone_conf:/root/cgdm/alone/conf \
@@ -146,11 +115,8 @@ docker run -d --name cgdm-alone \
   -v cgdm_alone_data:/root/cgdm/alone/data \
   -v cgdm_mysql_data:/var/lib/mysql \
   bladepipe/cgdm-alone:3.0.7
-```
 
-Mounting host directories:
-
-```bash
+# Mount to host directories
 mkdir -p /data/cgdm/{conf,logs,data,mysql}
 
 docker run -d --name cgdm-alone \
@@ -162,58 +128,135 @@ docker run -d --name cgdm-alone \
   bladepipe/cgdm-alone:3.0.7
 ```
 
-#### Compose deployment after local packaging
+### 3.3 Use Docker Compose
 
-```bash
-cd open-cdm/package/build
-docker load -i docker-alone-x86_64-3.0.7.tar
-docker compose -f docker-alone-x86_64-3.0.7.yml up -d
+After the build is complete, deployment files named `docker-alone-xxx.yml` will appear under `open-cdm/package/build`. Here is one example:
+
+```yml
+services:
+  dm_alone:
+    image: clougence/cgdm-alone:3.0.7
+    container_name: cgdm-alone
+    restart: always
+    ports:
+      - "8222:8222"
+      - "8008:8008"
+    volumes:
+      - cgdm_alone_conf:/root/cgdm/alone/conf
+      - cgdm_alone_logs:/root/cgdm/alone/logs
+      - cgdm_alone_data:/root/cgdm/alone/data
+      - cgdm_mysql_data:/var/lib/mysql
+    environment:
+      APP_WEB_PORT: 8222
+      APP_WEB_JWT: "ljgefdgjosdighjeroigh"
+      APP_SERVE_NAME: dm_alone
+      APP_SERVE_PORT: 8008
+      MYSQL_EMBEDDED: "true"
+      MYSQL_ROOT_PASSWORD: "123456"
+      # Override image defaults with packaged docker deployment values.
+      DB_HOST: "127.0.0.1"
+      DB_PORT: 3306
+      DB_DATABASE: cdmgr
+      DB_USERNAME: root
+      DB_PASSWORD: 123456
+
+volumes:
+  cgdm_alone_conf:
+  cgdm_alone_logs:
+  cgdm_alone_data:
+  cgdm_mysql_data:
 ```
 
-If the deployment machine and packaging machine are the same and the image has not been cleaned up, you can also run `docker compose` directly.
-
-#### Common directories and initialization notes
-
-| Path | Purpose |
-|------|---------|
-| `/root/cgdm/alone/conf` | Configuration files (`alone.properties`) |
-| `/root/cgdm/alone/logs` | Runtime logs |
-| `/root/cgdm/alone/data` | Runtime data |
-| `/var/lib/mysql` | Embedded MySQL data directory |
-
-The `MYSQL_EMBEDDED`, `MYSQL_ROOT_PASSWORD`, and `DB_*` environment variables are used as initialization parameters and default database connection parameters. On the first visit to the web page, you can review and modify the database connection information in the wizard. After confirmation, the system automatically creates the schema and the administrator account.
-
-### 3.3 Kubernetes Deployment
-
-#### Use the automatically generated yml files from local packaging
+Save it as `alone-docker-compose.yml`, or start the image directly with the command below in the `build` directory:
 
 ```bash
-cd open-cdm/package/build
-
-# x86_64
-kubectl apply -f k8s-alone-x86_64-3.0.7.yml
-
-# arm64
-kubectl apply -f k8s-alone-arm64-3.0.7.yml
+docker compose -f alone-docker-compose.yml up -d
 ```
 
-By default, the generated manifests create:
+### 3.4 Kubernetes Deployment
 
-- `cgdm` namespace
+After the build is complete, deployment files named `k8s-alone-xxx.yml` will appear under `open-cdm/package/build`. Here is one example:
+
+```yml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cgdm
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dm-alone
+  namespace: cgdm
+spec:
+  type: ClusterIP
+  ports:
+    - name: web
+      port: 8222
+      targetPort: 8222
+    - name: serve
+      port: 8008
+      targetPort: 8008
+  selector:
+    app: dm-alone
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dm-alone
+  namespace: cgdm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dm-alone
+  template:
+    metadata:
+      labels:
+        app: dm-alone
+    spec:
+      containers:
+        - name: alone
+          image: clougence/cgdm-alone:x86_64-3.0.7
+          ports:
+            - containerPort: 8222
+            - containerPort: 8008
+          env:
+            - name: APP_WEB_PORT
+              value: "8222"
+            - name: MYSQL_EMBEDDED
+              value: "true"
+```
+
+Save it as `alone-k8s.yml`, or deploy the image directly with the command below in the `build` directory:
+
+```bash
+kubectl apply -f alone-k8s.yml
+```
+
+If you want to use the generated file directly, you can also run:
+
+```bash
+kubectl apply -f alone-k8s.yml
+```
+
+By default, the generated manifest creates:
+
+- the `cgdm` namespace
 - MySQL Service and StatefulSet
-- Alone PVC, Service, and Deployment
+- the Alone PVC, Service, and Deployment
 
-> The default Service type is `ClusterIP`. If external access is required, adjust it to `NodePort`, `LoadBalancer`, or Ingress according to your environment.
+> The default Service type is `ClusterIP`. If you need access from outside the cluster, adjust it to `NodePort`, `LoadBalancer`, or Ingress according to your environment.
 
 ---
 
-## 4. Cluster (Console + Sidecar) Deployment
+## 4. Cluster Mode Deployment
 
 Cluster mode consists of two independent components, **Console** and **Sidecar**, and is suitable for team collaboration, large-scale data source management, and multi-node access.
 
-### 4.1 Install Package Deployment
+### 4.1 Use the Install Package
 
-#### Install Console
+Install and start Console first:
 
 ```bash
 tar -xzf cgdm-console.tar.gz
@@ -221,11 +264,20 @@ cd cgdm-console
 bin/startup.sh
 ```
 
-#### Configure and install Sidecar
+After startup, open the following address in your browser:
+
+```text
+http://localhost:8222
+```
+
+After initialization is complete, add a Sidecar machine in Console, obtain `AK / SK / WSN`, and then install and start Sidecar:
 
 ```bash
+# Extract the package
 tar -xzf cgdm-sidecar.tar.gz
-cd cgdm-sidecar
+# Configure AK / SK / WSN
+cd cgdm-sidecar/conf
+# Start sidecar
 bin/startup.sh
 ```
 
@@ -236,119 +288,478 @@ The recommended deployment order is:
 3. Add a Sidecar machine in Console and generate `AK / SK / WSN`
 4. Configure the generated parameters for Sidecar, then start or restart Sidecar
 
-### 4.2 Docker Deployment
+### 4.2 Use Docker
 
-#### Online image deployment
+```bash
+# Create a network
+docker network create cgdm-net
 
-Docker Compose is recommended for cluster mode. Example with global images:
+# Start MySQL
+docker run -d --name dm_mysql \
+  --network cgdm-net \
+  -p 26000:3306 \
+  -e MYSQL_DATABASE=cdmgr \
+  -e MYSQL_ROOT_PASSWORD=123456 \
+  mysql:8.0 \
+  mysqld --character-set-server=utf8mb4 \
+         --collation-server=utf8mb4_unicode_ci
 
-```yaml
-services:
-  dm_mysql:
-    image: mysql:8.0
-    environment:
-      MYSQL_DATABASE: cdmgr
-      MYSQL_ROOT_PASSWORD: Replace with your password
+# Start Console
+docker run -d --name dm_console \
+  --network cgdm-net \
+  -p 8222:8222 \
+  -p 8008:8008 \
+  -e APP_WEB_PORT=8222 \
+  -e APP_WEB_JWT=ljgefdgjosdighjeroigh \
+  -e APP_SERVE_NAME=dm_console \
+  -e APP_SERVE_PORT=8008 \
+  -e DB_HOST=dm_mysql \
+  -e DB_PORT=3306 \
+  -e DB_DATABASE=cdmgr \
+  -e DB_USERNAME=root \
+  -e DB_PASSWORD=123456 \
+  bladepipe/cgdm-console:3.0.7
 
-  dm_console:
-    image: bladepipe/cgdm-console:3.0.7
-    ports:
-      - "8222:8222"
-    environment:
-      APP_WEB_PORT: 8222
-      APP_WEB_JWT: "Replace this with a random string"
-      APP_SERVE_NAME: dm_console
-      APP_SERVE_PORT: 8008
-      DB_HOST: dm_mysql
-      DB_PORT: 3306
-      DB_DATABASE: cdmgr
-      DB_USERNAME: root
-      DB_PASSWORD: Replace with your password
-
-  dm_sidecar:
-    image: bladepipe/cgdm-sidecar:3.0.7
-    environment:
-      APP_WEB_PORT: 8080
-      DM_CLIENT_AK: "Obtain after creating a Sidecar in Console"
-      DM_CLIENT_SK: "Obtain after creating a Sidecar in Console"
-      DM_CLIENT_WSN: "Obtain after creating a Sidecar in Console"
-      APP_SERVE_NAME: dm_console
-      APP_SERVE_PORT: 8008
+# Start Sidecar
+docker run -d --name dm_sidecar \
+  --network cgdm-net \
+  -e APP_WEB_PORT=8080 \
+  -e DM_CLIENT_AK=<replace_with_actual_value> \
+  -e DM_CLIENT_SK=<replace_with_actual_value> \
+  -e DM_CLIENT_WSN=<replace_with_actual_value> \
+  -e APP_SERVE_NAME=dm_console \
+  -e APP_SERVE_PORT=8008 \
+  bladepipe/cgdm-sidecar:3.0.7
 ```
 
 For China deployment, simply replace the images with:
 
-- `cloudcanal-registry.cn-shanghai.cr.aliyuncs.com/clougence/cgdm-console:3.0.7-amd64`
-- `cloudcanal-registry.cn-shanghai.cr.aliyuncs.com/clougence/cgdm-sidecar:3.0.7-amd64`
+- `cloudcanal-registry.cn-shanghai.cr.aliyuncs.com/clougence/cgdm-console:3.0.7`
+- `cloudcanal-registry.cn-shanghai.cr.aliyuncs.com/clougence/cgdm-sidecar:3.0.7`
 
-#### Compose deployment after local packaging
+### 4.3 Use Docker Compose
 
-```bash
-cd open-cdm/package/build
-docker load -i docker-console-x86_64-3.0.7.tar
-docker load -i docker-sidecar-x86_64-3.0.7.tar
-docker compose -f docker-cluster-x86_64-3.0.7.yml up -d
+After the build is complete, deployment files named `docker-cluster-xxx.yml` will appear under `open-cdm/package/build`. Here is one example:
+
+```yml
+services:
+  dm_mysql:
+    image: mysql:8.0
+    container_name: cgdm-mysql
+    restart: always
+    ports:
+      - "26000:3306"
+    volumes:
+      - cgdm_mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: cdmgr
+      MYSQL_ROOT_PASSWORD: 123456
+    command: [ "mysqld", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+
+  dm_console:
+    image: clougence/cgdm-console:x86_64-3.0.7
+    container_name: cgdm-console
+    restart: always
+    ports:
+      - "8222:8222"
+      - "8008:8008"
+    depends_on:
+      - dm_mysql
+    volumes:
+      - cgdm_console_conf:/root/cgdm/console/conf
+      - cgdm_console_logs:/root/cgdm/console/logs
+      - cgdm_console_data:/root/cgdm/console/data
+    environment:
+      APP_WEB_PORT: 8222
+      APP_WEB_JWT: "ljgefdgjosdighjeroigh"
+      APP_SERVE_NAME: dm_console
+      APP_SERVE_PORT: 8008
+      # Override image defaults with packaged docker deployment values.
+      DB_HOST: dm_mysql
+      DB_PORT: 3306
+      DB_DATABASE: cdmgr
+      DB_USERNAME: root
+      DB_PASSWORD: 123456
+
+  dm_sidecar:
+    image: clougence/cgdm-sidecar:x86_64-3.0.7
+    container_name: cgdm-sidecar
+    restart: always
+    depends_on:
+      - dm_console
+    volumes:
+      - cgdm_sidecar_0_conf:/root/cgdm/sidecar/conf
+      - cgdm_sidecar_0_logs:/root/cgdm/sidecar/logs
+      - cgdm_sidecar_0_data:/root/cgdm/sidecar/data
+    environment:
+      APP_WEB_PORT: 8080
+      # A default Worker is included during the first installation.
+      DM_CLIENT_AK: "ak0a2c62tdo1ap2416655mpyx0v36l359p1v5rn782caw8t0qkk1s94b80lfs90"
+      DM_CLIENT_SK: "sk6206iy4pb0eydz9hg97jo3tu5d80j97e91bbql65167u8wb75x4ej6e4v4aa4"
+      DM_CLIENT_WSN: "wsn582nm54ca045p014288w6e919ec6294m430h427619v64g0pyqzcjb5040q3f"
+      APP_SERVE_NAME: dm_console
+      APP_SERVE_PORT: 8008
+
+volumes:
+  cgdm_console_conf:
+  cgdm_console_logs:
+  cgdm_console_data:
+  cgdm_sidecar_0_conf:
+  cgdm_sidecar_0_logs:
+  cgdm_sidecar_0_data:
+  cgdm_mysql_data:
 ```
 
-By default this starts:
+Save it as `cluster-docker-compose.yml`, or start the image directly with the command below in the `build` directory:
 
-- `dm_mysql`
-- `dm_console`
-- `dm_sidecar`
+```bash
+docker compose -f cluster-docker-compose.yml up -d
+```
 
-> The generated `docker-cluster-*.yml` already include the base ports, volumes, and environment variables. However, `DM_CLIENT_AK / SK / WSN` still need to be replaced with the actual values obtained from Console. In production, you should also replace the default passwords and JWT values.
+### 4.4 Kubernetes Deployment
 
-### 4.3 Kubernetes Deployment
+After the build is complete, deployment files named `k8s-cluster-xxx.yml` will appear under `open-cdm/package/build`. Like the Compose file in 4.3, this Kubernetes manifest already includes `dm_mysql`, `dm_console`, and `dm_sidecar`, as well as the `AK / SK / WSN` parameters required by the default Worker. After applying it, you can bring up Console + Sidecar directly. Here is one example:
 
-#### Use the automatically generated yml files from local packaging
+```yml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cgdm
+---
+# ---------------------- MySQL ----------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: dm-mysql
+  namespace: cgdm
+spec:
+  ports:
+    - port: 3306
+      targetPort: 3306
+  selector:
+    app: dm-mysql
+  clusterIP: None
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cgdm_mysql_data
+  namespace: cgdm
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: dm-mysql
+  namespace: cgdm
+spec:
+  serviceName: dm-mysql
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dm-mysql
+  template:
+    metadata:
+      labels:
+        app: dm-mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_DATABASE
+              value: cdmgr
+            - name: MYSQL_ROOT_PASSWORD
+              value: "123456"
+          args:
+            - "mysqld"
+            - "--character-set-server=utf8mb4"
+            - "--collation-server=utf8mb4_unicode_ci"
+            - "--default-time-zone=+08:00"
+          volumeMounts:
+            - name: mysql-data
+              mountPath: /var/lib/mysql
+  volumeClaimTemplates:
+    - metadata:
+        name: mysql-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi
+---
+# ---------------------- dm_console ----------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: dm-console
+  namespace: cgdm
+spec:
+  type: ClusterIP
+  ports:
+    - name: web
+      port: 8222
+      targetPort: 8222
+    - name: serve
+      port: 8008
+      targetPort: 8008
+  selector:
+    app: dm-console
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cgdm_console_conf
+  namespace: cgdm
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cgdm_console_logs
+  namespace: cgdm
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cgdm_console_data
+  namespace: cgdm
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dm-console
+  namespace: cgdm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dm-console
+  template:
+    metadata:
+      labels:
+        app: dm-console
+    spec:
+      containers:
+        - name: console
+          image: clougence/cgdm-console:x86_64-3.0.7
+          ports:
+            - containerPort: 8222
+            - containerPort: 8008
+          env:
+            - name: APP_WEB_PORT
+              value: "8222"
+            - name: APP_WEB_JWT
+              value: "ljgefdgjosdighjeroigh"
+            - name: APP_SERVE_NAME
+              value: dm_console
+            - name: APP_SERVE_PORT
+              value: "8008"
+            - name: DB_HOST
+              value: dm-mysql
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_DATABASE
+              value: cdmgr
+            - name: DB_USERNAME
+              value: root
+            - name: DB_PASSWORD
+              value: "123456"
+          volumeMounts:
+            - name: conf
+              mountPath: /root/cgdm/console/conf
+            - name: logs
+              mountPath: /root/cgdm/console/logs
+            - name: data
+              mountPath: /root/cgdm/console/data
+      volumes:
+        - name: conf
+          persistentVolumeClaim:
+            claimName: cgdm_console_conf
+        - name: logs
+          persistentVolumeClaim:
+            claimName: cgdm_console_logs
+        - name: data
+          persistentVolumeClaim:
+            claimName: cgdm_console_data
+---
+# ---------------------- dm_sidecar ----------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: dm-sidecar
+  namespace: cgdm
+spec:
+  type: ClusterIP
+  ports:
+    - name: serve
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: dm-sidecar
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cgdm_sidecar_0_conf
+  namespace: cgdm
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cgdm_sidecar_0_logs
+  namespace: cgdm
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cgdm_sidecar_0_data
+  namespace: cgdm
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dm-sidecar
+  namespace: cgdm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dm-sidecar
+  template:
+    metadata:
+      labels:
+        app: dm-sidecar
+    spec:
+      containers:
+        - name: sidecar
+          image: clougence/cgdm-sidecar:x86_64-3.0.7
+          ports:
+            - containerPort: 8080
+          env:
+            - name: APP_WEB_PORT
+              value: "8080"
+            - name: DM_CLIENT_AK
+              value: "ak0a2c62tdo1ap2416655mpyx0v36l359p1v5rn782caw8t0qkk1s94b80lfs90"
+            - name: DM_CLIENT_SK
+              value: "sk6206iy4pb0eydz9hg97jo3tu5d80j97e91bbql65167u8wb75x4ej6e4v4aa4"
+            - name: DM_CLIENT_WSN
+              value: "wsn582nm54ca045p014288w6e919ec6294m430h427619v64g0pyqzcjb5040q3f"
+            - name: APP_SERVE_NAME
+              value: dm_console
+            - name: APP_SERVE_PORT
+              value: "8008"
+          volumeMounts:
+            - name: conf
+              mountPath: /root/cgdm/sidecar/conf
+            - name: logs
+              mountPath: /root/cgdm/sidecar/logs
+            - name: data
+              mountPath: /root/cgdm/sidecar/data
+      volumes:
+        - name: conf
+          persistentVolumeClaim:
+            claimName: cgdm_sidecar_0_conf
+        - name: logs
+          persistentVolumeClaim:
+            claimName: cgdm_sidecar_0_logs
+        - name: data
+          persistentVolumeClaim:
+            claimName: cgdm_sidecar_0_data
+```
+
+Save it as `cluster-k8s.yml`, or deploy the image directly with the commands below in the `build` directory. After deployment, you can access Console directly through `port-forward`:
+
+```bash
+kubectl apply -f cluster-k8s.yml
+kubectl get pods -n cgdm
+kubectl port-forward -n cgdm svc/dm-console 8222:8222
+```
+
+If you want to use the generated files directly, you can also run:
 
 ```bash
 cd open-cdm/package/build
 
 # x86_64
 kubectl apply -f k8s-cluster-x86_64-3.0.7.yml
+kubectl port-forward -n cgdm svc/dm-console 8222:8222
 
 # arm64
 kubectl apply -f k8s-cluster-arm64-3.0.7.yml
 ```
 
-By default, the generated manifests create:
+By default, the generated manifest creates:
 
-- `cgdm` namespace
+- the `cgdm` namespace
 - MySQL Service and StatefulSet
-- Console PVC, Service, and Deployment
-- Sidecar PVC, Service, and Deployment
+- the Console PVC, Service, and Deployment
+- the Sidecar PVC, Service, and Deployment
 
-By default, the Console web service is exposed as `ClusterIP` on port `8222`. If external access is required, adjust the Service or Ingress configuration according to your environment.
+By default, the Console web service is exposed as `ClusterIP` on port `8222`. If you are only doing local verification, you can directly use the `kubectl port-forward` command above. If you need long-term external access from outside the cluster, adjust the Service to `NodePort`, `LoadBalancer`, or configure Ingress according to your environment.
 
 ---
 
 ## 5. Access and Initialization
 
-Whether you use Alone or Cluster mode, the default web console address is:
+Whether you use Alone or Cluster mode, the default Web console address is:
 
 ```text
 http://localhost:8222
 ```
 
-On the first visit, the initialization wizard appears. After database initialization and administrator account creation are completed, the system enters the full application.
+On the first visit, the initialization wizard appears. After database initialization and administrator account creation are completed, the system enters the full application. Unless otherwise configured, the default account is `admin@cdmgr.com`.
 
 ---
 
-## 6. Deployment Recommendations
+## 6. Image Publishing and Channel-Specific Deployment Files
 
-- For local evaluation or quick verification, prefer **Alone + Docker**
-- For team usage and multi-node access, prefer **Cluster + Docker Compose / Kubernetes**
-- For staging or production, prefer the Compose and Kubernetes manifests generated after local packaging, and then adjust the image registry, storage, passwords, and Service exposure method according to your environment
-- For mainland China environments, prefer Alibaba Cloud image addresses to reduce pull failures and timeouts
+In addition to runtime deployment itself, the repository also provides a set of scripts for generating channel-specific yml files and publishing images. These scripts depend on the install packages and offline images that have already been built under `open-cdm/package/build` and do not compile source code themselves.
 
----
-
-## 7. Image Publishing and Channel-Specific Deployment File Generation
-
-In addition to runtime deployment, the repository currently provides a set of scripts for channel-specific yml generation and image publishing. These scripts depend on install packages and offline images that have already been built under `open-cdm/package/build` and do not compile source code themselves.
-
-### 7.1 Current Script Locations
+### 6.1 Script Locations
 
 | Task | Entry Script | Description |
 |------|--------------|-------------|
@@ -356,116 +767,28 @@ In addition to runtime deployment, the repository currently provides a set of sc
 | Publish China images | `open-cdm/package/docker-publish-china.sh` | Reads offline image tar files from `open-cdm/package/build` |
 | Publish Global images | `open-cdm/package/docker-publish-global.sh` | Reads offline image tar files from `open-cdm/package/build` |
 
-If you only need to deploy locally packaged artifacts, you can directly use the auto-generated `docker-*.yml` and `k8s-*.yml` files under `open-cdm/package/build`. If you need channel-specific manifests with full China or Global image prefixes, use the scripts described here.
+If you only need to deploy locally packaged artifacts, you can directly use the generated `docker-*.yml` and `k8s-*.yml` files under `open-cdm/package/build`. If you need channel-specific manifests with full image prefixes for China or Global registries, use the scripts described here.
 
-### 7.2 Environment Preparation and Credentials
+### 6.2 Environment Preparation and Credentials
 
-Prerequisites:
-
-- Docker available
-- JDK 21+
-- Node.js
-- Git
-
-You can first verify that the Docker daemon is working normally:
-
-```bash
-docker info
-```
-
-The publish scripts read registry credentials from `~/.gradle/gradle.properties`. The current scripts directly read username and password. The China and Global registry and namespace values are based on built-in script defaults. The Global namespace can be overridden through the `DOCKER_NAMESPACE` environment variable.
+The publish scripts read registry credentials from `~/.gradle/gradle.properties`.
 
 ```properties
 # China Registry (Alibaba Cloud Container Registry)
-cgdm.docker.china.username=your_aliyun_username
-cgdm.docker.china.password=your_aliyun_fixed_password
+cgdm.docker.china.username=<your_aliyun_username>
+cgdm.docker.china.password=<your_aliyun_fixed_password>
 
 # Global Registry (Docker Hub)
-cgdm.docker.global.username=your_dockerhub_username
-cgdm.docker.global.password=your_dockerhub_token
+cgdm.docker.global.username=<your_dockerhub_username>
+cgdm.docker.global.password=<your_dockerhub_token>
 ```
 
-The current built-in defaults are:
+### 6.3 Publishing Workflow
 
-- China registry: `cloudcanal-registry.cn-shanghai.cr.aliyuncs.com`
-- China namespace: `clougence`
-- Global registry: `docker.io`
-- Global namespace: `bladepipe`
-
-### 7.3 Recommended Workflow
-
-The recommended order consists of three steps:
+The process consists of three steps:
 
 1. Run `./package.sh --build --docker` under `open-cdm/package` to generate install packages, offline images, and base manifests.
-2. If you need China / Global channel-specific yml files, run `build-docker-yml.sh`.
-3. If you need to push images to a remote registry, run `docker-publish-china.sh` or `docker-publish-global.sh`.
-
-#### Generate channel-specific yml
-
-Entry point:
-
-```bash
-cd /worker_space/dm/open-cdm/package
-
-# Auto-detect built platforms and generate both China and Global yml sets
-./docker/build-docker-yml.sh
-
-# Generate x86_64 only
-./docker/build-docker-yml.sh --platform=x86_64
-
-# Generate China channel only
-./docker/build-docker-yml.sh --platform=x86_64 --target=china
-```
-
-You can also run it directly in the docker template directory:
-
-```bash
-cd /worker_space/dm/open-cdm/package/docker
-
-# Generate dual-platform, dual-channel output
-./build-docker-yml.sh --platform=x86_64,arm64 --target=china,global
-```
-
-The script replaces `clougence/cgdm-*:${build_version}` with:
-
-- China: `cloudcanal-registry.cn-shanghai.cr.aliyuncs.com/clougence/cgdm-*:<version>-<arch>`
-- Global: `docker.io/bladepipe/cgdm-*:<version>-<arch>`
-
-#### Publish images
-
-China:
-
-```bash
-cd /worker_space/dm/open-cdm/package
-./docker-publish-china.sh --platform=x86_64
-```
-
-Global:
-
-```bash
-cd /worker_space/dm/open-cdm/package
-./docker-publish-global.sh --platform=x86_64,arm64
-```
-
-### 7.4 Script Behavior Description
-
-- `build-docker-yml.sh` detects platforms from `open-cdm/package/build` and replaces image prefixes and version suffixes according to the target channel.
-- The output directory of `open-cdm/package/docker/build-docker-yml.sh` is `open-cdm/package/build`.
-- The publish scripts prefer local Docker images. If an image does not exist, they automatically run `docker load` from `open-cdm/package/build/*.tar`.
-- When publishing multi-platform images at the same time, the scripts automatically create and push a manifest.
-
-### 7.5 Frequently Asked Questions
-
-If publishing fails with `missing ... tar -> run package/package.sh --docker first`, it means the corresponding image tar file does not yet exist under `open-cdm/package/build`. Run this first:
-
-```bash
-cd /worker_space/dm/open-cdm/package
-./package.sh --build --docker x86_64
-```
-
-If the script fails when `--platform` is omitted, it means the script requires all default platforms to have already been fully built. To publish a single platform only, specify it explicitly:
-
-```bash
-./docker-publish-china.sh --platform=x86_64
-./docker-publish-global.sh --platform=x86_64
-```
+2. Push the images to the remote registry.
+   - `./docker-publish-global.sh` pushes images to Docker Hub.
+   - `./docker-publish-china.sh` pushes images to the China registry.
+3. Generate channel-specific yml files with `open-cdm/package/docker/build-docker-yml.sh`.
