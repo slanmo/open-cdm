@@ -87,7 +87,7 @@ docker run -d --name cgdm-alone -p 8222:8222 \
 http://localhost:8222
 ```
 
-> 首次访问会进入初始化向导
+> 首次访问会进入初始化向导，默认账号：`admin@cdmgr.com`
 
 ### 添加数据源
 

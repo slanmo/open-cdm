@@ -102,9 +102,9 @@ if [ "$DO_DOCKER" -eq 1 ]; then
   echo "=== Docker: starting image build ==="
   if [ -z "$DOCKER_ARCH" ] || [ "$DOCKER_ARCH" = "all" ]; then
     echo "[DOCKER] building all platforms, version=${VERSION}..."
-    bash "$SCRIPT_DIR/build-docker.sh" "$VERSION" --platform=all
+    bash "$SCRIPT_DIR/docker/build-docker.sh" "$VERSION" --platform=all
   else
     echo "[DOCKER] building $DOCKER_ARCH images, version=${VERSION}..."
-    bash "$SCRIPT_DIR/build-docker.sh" "$VERSION" --platform="$DOCKER_ARCH"
+    bash "$SCRIPT_DIR/docker/build-docker.sh" "$VERSION" --platform="$DOCKER_ARCH"
   fi
 fi

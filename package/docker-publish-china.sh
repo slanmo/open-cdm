@@ -1,11 +1,11 @@
 #!/bin/bash
 # ============================================================================
-# publish-china.sh — 发布 CloudDM 镜像到中国区（阿里云容器镜像）
+# docker-publish-china.sh — 发布 CloudDM 镜像到中国区（阿里云容器镜像）
 #
 # 用法:
-#   ./publish-china.sh                         # 自动探测所有已构建平台
-#   ./publish-china.sh --platform=x86_64       # 仅推送 x86_64
-#   ./publish-china.sh --platform=x86_64,arm64 # 推送双平台
+#   ./docker-publish-china.sh                         # 自动探测所有已构建平台
+#   ./docker-publish-china.sh --platform=x86_64       # 仅推送 x86_64
+#   ./docker-publish-china.sh --platform=x86_64,arm64 # 推送双平台
 #
 # 前置: 运行 package/package.sh --docker 完成编译和镜像构建
 # ============================================================================
@@ -183,7 +183,7 @@ publish_all() {
 
 usage() {
   cat <<'EOF'
-用法: ./publish-china.sh [--platform=PLATFORM]
+用法: ./docker-publish-china.sh [--platform=PLATFORM]
 
 --platform=PLATFORM  平台: x86_64 | arm64 | 逗号分隔（默认: 自动探测 package/build/）
 -h, --help           显示帮助

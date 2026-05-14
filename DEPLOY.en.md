@@ -353,8 +353,8 @@ In addition to runtime deployment, the repository currently provides a set of sc
 | Task | Entry Script | Description |
 |------|--------------|-------------|
 | Generate China / Global Compose and Kubernetes yml | `open-cdm/package/docker/build-docker-yml.sh` | Reads templates from the current directory and outputs to `open-cdm/package/build` |
-| Publish China images | `open-cdm/package/publish-china.sh` | Reads offline image tar files from `open-cdm/package/build` |
-| Publish Global images | `open-cdm/package/publish-global.sh` | Reads offline image tar files from `open-cdm/package/build` |
+| Publish China images | `open-cdm/package/docker-publish-china.sh` | Reads offline image tar files from `open-cdm/package/build` |
+| Publish Global images | `open-cdm/package/docker-publish-global.sh` | Reads offline image tar files from `open-cdm/package/build` |
 
 If you only need to deploy locally packaged artifacts, you can directly use the auto-generated `docker-*.yml` and `k8s-*.yml` files under `open-cdm/package/build`. If you need channel-specific manifests with full China or Global image prefixes, use the scripts described here.
 
@@ -398,7 +398,7 @@ The recommended order consists of three steps:
 
 1. Run `./package.sh --build --docker` under `open-cdm/package` to generate install packages, offline images, and base manifests.
 2. If you need China / Global channel-specific yml files, run `build-docker-yml.sh`.
-3. If you need to push images to a remote registry, run `publish-china.sh` or `publish-global.sh`.
+3. If you need to push images to a remote registry, run `docker-publish-china.sh` or `docker-publish-global.sh`.
 
 #### Generate channel-specific yml
 
@@ -437,14 +437,14 @@ China:
 
 ```bash
 cd /worker_space/dm/open-cdm/package
-./publish-china.sh --platform=x86_64
+./docker-publish-china.sh --platform=x86_64
 ```
 
 Global:
 
 ```bash
 cd /worker_space/dm/open-cdm/package
-./publish-global.sh --platform=x86_64,arm64
+./docker-publish-global.sh --platform=x86_64,arm64
 ```
 
 ### 7.4 Script Behavior Description
@@ -466,6 +466,6 @@ cd /worker_space/dm/open-cdm/package
 If the script fails when `--platform` is omitted, it means the script requires all default platforms to have already been fully built. To publish a single platform only, specify it explicitly:
 
 ```bash
-./publish-china.sh --platform=x86_64
-./publish-global.sh --platform=x86_64
+./docker-publish-china.sh --platform=x86_64
+./docker-publish-global.sh --platform=x86_64
 ```

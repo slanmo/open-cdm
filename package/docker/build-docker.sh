@@ -10,7 +10,8 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PACKAGE_BUILD_DIR="$SCRIPT_DIR/build"
+PACKAGE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+PACKAGE_BUILD_DIR="$PACKAGE_DIR/build"
 SERVICES=(console sidecar alone)
 
 VERSION="${1:-local}"
@@ -32,7 +33,7 @@ done
 [ -z "$VERSION" ] && { echo "ERROR: missing VERSION"; exit 1; }
 
 # ---- platform mapping ----
-docker_platform()  { case "$1" in x86_64) echo "linux/amd64" ;; arm64) echo "linux/arm64" ;; esac }
+docker_platform()  { case "$1" in x86_64) echo "linux/amd64" ;; arm64) echo "linux/arm64" ;; esac; }
 base_image_tag()   { echo "clougence/cgdm-${1}-base:local"; }
 image_tag()        { echo "${1}-${2}"; }
 
@@ -50,19 +51,19 @@ ensure_builder() {
 
 build_base_image() {
   local plat="$1"
-  local dockerfile="$SCRIPT_DIR/docker/${plat}/base/Dockerfile"
+  local dockerfile="$SCRIPT_DIR/${plat}/base/Dockerfile"
   local tag; tag="$(base_image_tag "$plat")"
   echo "  building base image: $tag ($(docker_platform "$plat"))"
   BUILDX_NO_DEFAULT_ATTESTATIONS=1 DOCKER_DEFAULT_PLATFORM="$(docker_platform "$plat")" docker build \
     --provenance=false --sbom=false \
     -t "$tag" \
     -f "$dockerfile" \
-    "$SCRIPT_DIR"
+    "$PACKAGE_DIR"
 }
 
 build_service_image() {
   local svc="$1" plat="$2"
-  local dockerfile="$SCRIPT_DIR/docker/${plat}/${svc}/Dockerfile"
+  local dockerfile="$SCRIPT_DIR/${plat}/${svc}/Dockerfile"
   local tag; tag="clougence/cgdm-${svc}:$(image_tag "$plat" "$VERSION")"
   echo "  building $svc: $tag ($(docker_platform "$plat"))"
   BUILDX_NO_DEFAULT_ATTESTATIONS=1 DOCKER_DEFAULT_PLATFORM="$(docker_platform "$plat")" docker build \
@@ -70,7 +71,7 @@ build_service_image() {
     --build-arg BASE_IMAGE="$(base_image_tag "$plat")" \
     -t "$tag" \
     -f "$dockerfile" \
-    "$SCRIPT_DIR"
+    "$PACKAGE_DIR"
 }
 
 export_service_image() {
@@ -83,7 +84,7 @@ export_service_image() {
 
 generate_compose_files() {
   local plat="$1"
-  local compose_src="$SCRIPT_DIR/docker"
+  local compose_src="$SCRIPT_DIR"
   for name in alone cluster; do
     local src="$compose_src/docker-${name}.yml"
     local dst="$PACKAGE_BUILD_DIR/docker-${name}-$(image_tag "$plat" "$VERSION").yml"
@@ -96,7 +97,7 @@ generate_compose_files() {
 
 generate_k8s_files() {
   local plat="$1"
-  local k8s_src="$SCRIPT_DIR/docker"
+  local k8s_src="$SCRIPT_DIR"
   for name in alone cluster; do
     local src="$k8s_src/k8s-${name}.yml"
     local dst="$PACKAGE_BUILD_DIR/k8s-${name}-$(image_tag "$plat" "$VERSION").yml"

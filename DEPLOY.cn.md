@@ -353,8 +353,8 @@ http://localhost:8222
 | 任务 | 入口脚本 | 说明 |
 |------|----------|------|
 | 生成 China / Global Compose 与 Kubernetes yml | `open-cdm/package/docker/build-docker-yml.sh` | 读取当前目录模板，输出到 `open-cdm/package/build` |
-| 发布中国区镜像 | `open-cdm/package/publish-china.sh` | 从 `open-cdm/package/build` 读取离线镜像 tar |
-| 发布全球镜像 | `open-cdm/package/publish-global.sh` | 从 `open-cdm/package/build` 读取离线镜像 tar |
+| 发布中国区镜像 | `open-cdm/package/docker-publish-china.sh` | 从 `open-cdm/package/build` 读取离线镜像 tar |
+| 发布全球镜像 | `open-cdm/package/docker-publish-global.sh` | 从 `open-cdm/package/build` 读取离线镜像 tar |
 
 如果你只是要部署本地打包后的产物，直接使用 `open-cdm/package/build` 下自动生成的 `docker-*.yml` 和 `k8s-*.yml` 即可；如果你需要按中国区或全球仓库生成带完整镜像前缀的渠道化清单，再使用这里的脚本。
 
@@ -398,7 +398,7 @@ cgdm.docker.global.password=your_dockerhub_token
 
 1. 在 `open-cdm/package` 下执行 `./package.sh --build --docker`，生成安装包、离线镜像和基础清单。
 2. 如需生成 China / Global 渠道化 yml，再执行 `build-docker-yml.sh`。
-3. 如需把镜像推送到远端仓库，再执行 `publish-china.sh` 或 `publish-global.sh`。
+3. 如需把镜像推送到远端仓库，再执行 `docker-publish-china.sh` 或 `docker-publish-global.sh`。
 
 #### 生成渠道化 yml
 
@@ -437,14 +437,14 @@ cd /worker_space/dm/open-cdm/package/docker
 
 ```bash
 cd /worker_space/dm/open-cdm/package
-./publish-china.sh --platform=x86_64
+./docker-publish-china.sh --platform=x86_64
 ```
 
 全球：
 
 ```bash
 cd /worker_space/dm/open-cdm/package
-./publish-global.sh --platform=x86_64,arm64
+./docker-publish-global.sh --platform=x86_64,arm64
 ```
 
 ### 7.4 脚本行为说明
@@ -466,6 +466,6 @@ cd /worker_space/dm/open-cdm/package
 如果不加 `--platform` 就报错，说明脚本默认要求全部默认平台都已经构建完成。只发布单个平台时，请显式指定：
 
 ```bash
-./publish-china.sh --platform=x86_64
-./publish-global.sh --platform=x86_64
+./docker-publish-china.sh --platform=x86_64
+./docker-publish-global.sh --platform=x86_64
 ```
