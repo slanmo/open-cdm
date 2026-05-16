@@ -107,8 +107,7 @@ cd package && ./package.sh --docker x86_64
 ### Debugging 或运行
 
 1. 在项目根目录运行 `./all_build.sh`
-2. 进入 `clouddm-boot/boot-alone`，运行 `com.clougence.clouddm.boot.DmAloneLauncher` ，启动后端应用
-3. 进入 `clouddm-platform/cgdm-web`，运行 `npm run serve` ，启动前端应用
+2. 进入 `clouddm-boot/boot-alone`，运行 `com.clougence.clouddm.boot.DmAloneLauncher` ，启动应用并访问 `http://localhost:8222`
 4. **[初次运行]** 进入 web 页面初次初始化，填写数据库等信息，当看到 **等待应用重启** 提示 ，重新执行第 2 步
 
 ## 代码规范
