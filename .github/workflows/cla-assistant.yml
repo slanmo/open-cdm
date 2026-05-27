@@ -1,0 +1,19 @@
+name: CLA Assistant
+
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  recheck:
+    name: Recheck CLA status
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger hosted CLA Assistant
+        run: |
+          curl --fail --location --silent --show-error \
+            "https://cla-assistant.io/check/${{ github.repository }}?pullRequest=${{ github.event.pull_request.number }}" \
+            --output /dev/null
